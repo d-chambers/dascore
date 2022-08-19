@@ -1,0 +1,517 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Quickstart &#8212; DASCore 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Installation" href="../installation.html" />
+    <link rel="prev" title="DASCore" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">¶</a></h1>
+<p>A quickstart for DASCore, a python library for fiber-optic sensing.</p>
+<p>DASCore has two main data structures; the Patch and the Spool.</p>
+<section id="patch">
+<h2>Patch<a class="headerlink" href="#patch" title="Permalink to this heading">¶</a></h2>
+<p>A section of contiguous, uniformly sampled data is called a Patch. These can be generated in a few ways:</p>
+<section id="load-an-example-patch-for-simple-demonstrations">
+<h3>1. Load an example patch (for simple demonstrations)<a class="headerlink" href="#load-an-example-patch-for-simple-demonstrations" title="Permalink to this heading">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="n">pa</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_example_patch</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="load-a-file">
+<h3>2. Load a file<a class="headerlink" href="#load-a-file" title="Permalink to this heading">¶</a></h3>
+<p>We first download an example fiber file (you need an internet connection).
+Next, we simply read it into a <span class="xref myst">Stream</span> object then get the first (and only) patch.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get a fiber file</span>
+<span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="kn">from</span> <span class="nn">dascore.utils.downloader</span> <span class="kn">import</span> <span class="n">fetch</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;terra15_das_1_trimmed.hdf5&quot;</span><span class="p">)</span>  <span class="c1"># path to a datafile</span>
+
+<span class="n">pa</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Downloading file &#39;terra15_das_1_trimmed.hdf5&#39; from &#39;https://github.com/dasdae/test_data/raw/master/das/terra15_das_1_trimmed.hdf5&#39; to &#39;/home/runner/.cache/dascore/0.0.0&#39;.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/tables/attributeset.py:291: DataTypeWarning: Unsupported type for attribute &#39;amplifiers_enabled&#39; in node &#39;/&#39;. Offending HDF5 class: 8
+  value = self._g_getattr(self._v_node, name)
+/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/tables/attributeset.py:291: DataTypeWarning: Unsupported type for attribute &#39;gps_locked&#39; in node &#39;/&#39;. Offending HDF5 class: 8
+  value = self._g_getattr(self._v_node, name)
+/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/tables/attributeset.py:291: DataTypeWarning: Unsupported type for attribute &#39;restart_saving_behaviour&#39; in node &#39;/&#39;. Offending HDF5 class: 8
+  value = self._g_getattr(self._v_node, name)
+/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/tables/attributeset.py:291: DataTypeWarning: Unsupported type for attribute &#39;primary_dataset&#39; in node &#39;velocity&#39;. Offending HDF5 class: 8
+  value = self._g_getattr(self._v_node, name)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="create-from-arrays">
+<h3>3. Create from Arrays<a class="headerlink" href="#create-from-arrays" title="Permalink to this heading">¶</a></h3>
+<p>Patches can also be created from numpy arrays and dictionaries. This requires:</p>
+<ul class="simple">
+<li><p>The data array</p></li>
+<li><p>The coordinates for labeling each axis</p></li>
+<li><p>The attributes (optional)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="kn">from</span> <span class="nn">dascore.utils.time</span> <span class="kn">import</span> <span class="n">to_timedelta64</span>
+
+
+<span class="c1"># Create the patch data</span>
+<span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">2_000</span><span class="p">))</span>
+
+<span class="c1"># Create attributes, or metadata</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="s2">&quot;2017-09-18&quot;</span><span class="p">)</span>
+<span class="n">attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">d_distance</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">d_time</span><span class="o">=</span><span class="n">to_timedelta64</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">250</span><span class="p">),</span>
+    <span class="n">category</span><span class="o">=</span><span class="s2">&quot;DAS&quot;</span><span class="p">,</span>
+    <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;test_data1&quot;</span><span class="p">,</span>
+    <span class="n">time_min</span><span class="o">=</span><span class="n">t1</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Create coordinates, labels for each axis in the array.</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">distance</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;d_distance&quot;</span><span class="p">],</span>
+    <span class="n">time</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;d_time&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">pa</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">array</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pa</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;dascore.Patch (distance: 300, time: 2000)&gt;
+array([[0.57132478, 0.59464662, 0.74754326, ..., 0.15408756, 0.74447463,
+        0.77559945],
+       [0.80396159, 0.05467161, 0.31188615, ..., 0.92668428, 0.3312662 ,
+        0.4423999 ],
+       [0.30908265, 0.28829436, 0.03966387, ..., 0.45554965, 0.59898231,
+        0.97447404],
+       ...,
+       [0.38373908, 0.94870734, 0.70006125, ..., 0.18131198, 0.35802939,
+        0.91119302],
+       [0.19843063, 0.80257736, 0.76982055, ..., 0.69640152, 0.33330861,
+        0.00752891],
+       [0.95559499, 0.33893831, 0.14032678, ..., 0.75524589, 0.86406305,
+        0.07806963]])
+Coordinates:
+  * distance  (distance) int64 0 1 2 3 4 5 6 7 ... 293 294 295 296 297 298 299
+  * time      (time) datetime64[ns] 2017-09-18 ... 2017-09-18T00:00:07.996000
+Attributes:
+    d_distance:      1
+    d_time:          4000000 nanoseconds
+    category:        DAS
+    id:              test_data1
+    time_min:        2017-09-18
+    dims:            distance,time
+    time_max:        2017-09-18T00:00:07.996000000
+    history:         []
+    distance_units:  m
+    distance_max:    299
+    data_units:      
+    network:         
+    tag:             
+    instrument_id:   
+    data_type:       DAS
+    time_units:      s
+    station:         
+    distance_min:    0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="processing">
+<h2>Processing<a class="headerlink" href="#processing" title="Permalink to this heading">¶</a></h2>
+<p>For various reasons, Patches should be treated as <em>immutable</em>, meaning they should
+not be modified in place, but rather new patches created when something needs to be
+modified.</p>
+<p>The patch has several methods which are intended to be chained together via a
+<a class="reference external" href="https://en.wikipedia.org/wiki/Fluent_interface">fluent interface</a>, meaning each
+method returns a new <code class="docutils literal notranslate"><span class="pre">Patch</span></code> instance.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="n">pa</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_example_patch</span><span class="p">()</span>
+
+<span class="n">out</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">pa</span><span class="o">.</span><span class="n">decimate</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># decimate to reduce data volume by 8 along time dimension</span>
+    <span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;distance&#39;</span><span class="p">)</span>  <span class="c1"># detrend along distance dimension</span>
+    <span class="o">.</span><span class="n">pass_filter</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>  <span class="c1"># apply a low-pass 10 Hz butterworth filter</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The processing methods are located in the dascore.proc package.</p>
+</section>
+<section id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this heading">¶</a></h2>
+<p>DASCore provides various visualization functions found in the <code class="docutils literal notranslate"><span class="pre">dascore.viz</span></code>
+package or using the <code class="docutils literal notranslate"><span class="pre">Patch.viz</span></code> namespace.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="n">pa</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_example_patch</span><span class="p">()</span>
+<span class="n">pa</span><span class="o">.</span><span class="n">viz</span><span class="o">.</span><span class="n">waterfall</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/91ba03af6d1ed5381507d5f28eda99a7d80064713aab1bbfcba7d13655134a62.png" src="../../_images/91ba03af6d1ed5381507d5f28eda99a7d80064713aab1bbfcba7d13655134a62.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:xlabel=&#39;Time (start: 2017-09-18)&#39;, ylabel=&#39;Distance&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="modifying-patches">
+<h2>Modifying Patches<a class="headerlink" href="#modifying-patches" title="Permalink to this heading">¶</a></h2>
+<p>Because patches should be treated as immutable objects, you can’t just modify
+them with normal item assignment. There are a few methods that return new
+patches with modifications, however, that are functionally the same.</p>
+<section id="new">
+<h3>new<a class="headerlink" href="#new" title="Permalink to this heading">¶</a></h3>
+<p>Often you may wish to modify one aspect of the patch. <code class="docutils literal notranslate"><span class="pre">Patch.new</span></code> is designed
+for this purpose:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="n">pa</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_example_patch</span><span class="p">()</span>
+
+<span class="c1"># create a copy of patch with new data but coords and attrs stay the same</span>
+<span class="n">new</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">pa</span><span class="o">.</span><span class="n">data</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="update-attrs">
+<h3>update attrs<a class="headerlink" href="#update-attrs" title="Permalink to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Patch.update_attrs()</span></code> is for making small changes to the patch attrs (metadata) while
+keeping the unaffected metadata (<code class="docutils literal notranslate"><span class="pre">Patch.new</span></code> would require you replace the entirety of attrs).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="n">pa</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_example_patch</span><span class="p">()</span>
+
+<span class="c1"># update existing attribute &#39;network&#39; and create new attr &#39;new_attr&#39;</span>
+<span class="n">pa1</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">update_attrs</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="s1">&#39;experiment_1&#39;</span><span class="p">,</span> <span class="s1">&#39;new_attr&#39;</span><span class="p">:</span> <span class="mi">42</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Patch.update_attrs</span></code> also tries to keep the patch attributes consistent.
+For example, changing the start, end, or sampling of a dimension should
+update the other attributes affected by the change.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="n">pa</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_example_patch</span><span class="p">()</span>
+
+<span class="c1"># update start time should also shift endtime</span>
+<span class="n">pa1</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">update_attrs</span><span class="p">(</span><span class="n">time_min</span><span class="o">=</span><span class="s1">&#39;2000-01-01&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pa</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;time_min&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pa1</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;time_min&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2017-09-18
+2000-01-01T00:00:00.000000000
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="spool">
+<h2>Spool<a class="headerlink" href="#spool" title="Permalink to this heading">¶</a></h2>
+<p>Spools are containers/managers of patches. These come in a few varieties which
+can manage a group of patches loaded into memory, archives of local files,
+and (in the future) a variety of clients for accessing remote resources.</p>
+<p>The simplest way to get the appropriate spool for a specified input is to use
+the <code class="docutils literal notranslate"><span class="pre">get_spool</span></code> method, which should just work in the vast majority of cases.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+
+<span class="c1"># create a list of patches</span>
+<span class="n">patch_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">dc</span><span class="o">.</span><span class="n">get_example_patch</span><span class="p">()]</span>
+
+<span class="c1"># get a spool for managing in-memory patches</span>
+<span class="n">spool1</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_spool</span><span class="p">(</span><span class="n">patch_list</span><span class="p">)</span>
+
+<span class="c1"># get a spool from a das file</span>
+<span class="kn">from</span> <span class="nn">dascore.utils.downloader</span> <span class="kn">import</span> <span class="n">fetch</span>
+<span class="n">path_to_das_file</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;terra15_das_1_trimmed.hdf5&quot;</span><span class="p">)</span>
+<span class="n">spool2</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_spool</span><span class="p">(</span><span class="n">path_to_das_file</span><span class="p">)</span>
+
+<span class="c1"># get a spool from a directory of DAS files</span>
+<span class="n">directory_path</span> <span class="o">=</span> <span class="n">path_to_das_file</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">spool3</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_spool</span><span class="p">(</span><span class="n">directory_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/tables/attributeset.py:291: DataTypeWarning: Unsupported type for attribute &#39;amplifiers_enabled&#39; in node &#39;/&#39;. Offending HDF5 class: 8
+  value = self._g_getattr(self._v_node, name)
+/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/tables/attributeset.py:291: DataTypeWarning: Unsupported type for attribute &#39;gps_locked&#39; in node &#39;/&#39;. Offending HDF5 class: 8
+  value = self._g_getattr(self._v_node, name)
+/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/tables/attributeset.py:291: DataTypeWarning: Unsupported type for attribute &#39;restart_saving_behaviour&#39; in node &#39;/&#39;. Offending HDF5 class: 8
+  value = self._g_getattr(self._v_node, name)
+/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/tables/attributeset.py:291: DataTypeWarning: Unsupported type for attribute &#39;primary_dataset&#39; in node &#39;velocity&#39;. Offending HDF5 class: 8
+  value = self._g_getattr(self._v_node, name)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Despite some implementation differences, all spools have common behavior/methods.</p>
+<section id="accessing-patches">
+<h3>Accessing patches<a class="headerlink" href="#accessing-patches" title="Permalink to this heading">¶</a></h3>
+<p>Patches are extracted from the spool via simple iteration or indexing. New
+spools are returned via slicing.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="n">spool</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_example_spool</span><span class="p">()</span>
+
+<span class="n">patch</span> <span class="o">=</span> <span class="n">spool</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># extract first patch</span>
+
+<span class="c1"># iterate patchs</span>
+<span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="n">spool</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="c1"># slice spool to create new spool which excludes first patch.</span>
+<span class="n">new_spool</span> <span class="o">=</span> <span class="n">spool</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="get-contents">
+<h3>get_contents<a class="headerlink" href="#get-contents" title="Permalink to this heading">¶</a></h3>
+<p>Returns a dataframe listing contents. This method may not be supported on all
+spools, especially those interfacing with vast remote resources.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="n">spool</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_example_spool</span><span class="p">()</span>
+
+<span class="c1"># Return dataframe with contents of spool (each row has metadata of a patch)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">spool</span><span class="o">.</span><span class="n">get_contents</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  data_type category                time_min                time_max  \
+0       DAS      DAS 2020-01-03 00:00:00.000 2020-01-03 00:00:07.996   
+1       DAS      DAS 2020-01-03 00:00:07.996 2020-01-03 00:00:15.992   
+2       DAS      DAS 2020-01-03 00:00:15.992 2020-01-03 00:00:23.988   
+
+                  d_time  distance_min  distance_max  d_distance  \
+0 0 days 00:00:00.004000           0.0         299.0         1.0   
+1 0 days 00:00:00.004000           0.0         299.0         1.0   
+2 0 days 00:00:00.004000           0.0         299.0         1.0   
+
+  instrument_id           dims     tag station network history  \
+0                distance,time  random                           
+1                distance,time  random                           
+2                distance,time  random                           
+
+                                               patch  
+0  &lt;dascore.Patch (distance: 300, time: 2000)&gt;\na...  
+1  &lt;dascore.Patch (distance: 300, time: 2000)&gt;\na...  
+2  &lt;dascore.Patch (distance: 300, time: 2000)&gt;\na...  
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="select">
+<h3>select<a class="headerlink" href="#select" title="Permalink to this heading">¶</a></h3>
+<p>Selects a subset of spool and returns a new spool. <code class="docutils literal notranslate"><span class="pre">get_contents</span></code> will now
+reflect subset of the original data requested by the select operation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="n">spool</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_example_spool</span><span class="p">()</span>
+
+<span class="c1"># select a spool with</span>
+<span class="n">subspool</span> <span class="o">=</span> <span class="n">spool</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;2020-01-03T00:00:09&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In addition to trimming the data along a specified dimension (as shown above),
+select can be used to filter patches that meet a specified criteria.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="c1"># load a spool which has many diverse patches</span>
+<span class="n">spool</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_example_spool</span><span class="p">(</span><span class="s1">&#39;diverse_das&#39;</span><span class="p">)</span>
+
+<span class="c1"># Only include patches which are in network &#39;das2&#39; or &#39;das3&#39;</span>
+<span class="n">subspool</span> <span class="o">=</span> <span class="n">spool</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;das2&#39;</span><span class="p">,</span> <span class="s1">&#39;das3&#39;</span><span class="p">})</span>
+
+<span class="c1"># only include spools which match some unix-style query on their tags.</span>
+<span class="n">subspool</span> <span class="o">=</span> <span class="n">spool</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;some*&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="chunk">
+<h3>chunk<a class="headerlink" href="#chunk" title="Permalink to this heading">¶</a></h3>
+<p>Chunk controls how data are grouped together in patches. It can be used to
+merge contiguous patches together, specify size of patches for processing,
+overlap with previous segments, etc.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="n">spool</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">get_example_spool</span><span class="p">()</span>
+
+<span class="c1"># chunk spool for 3 second increments with 1 second overlaps</span>
+<span class="c1"># and keep any segements that don&#39;t have full 3600 seconds</span>
+<span class="n">subspool</span> <span class="o">=</span> <span class="n">spool</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keep_partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># merge all contiguous segments along time dimension</span>
+<span class="n">merged_spool</span> <span class="o">=</span> <span class="n">spool</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">DASCore</a></h1>
+
+
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="working_with_files.html">Working with Files</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/dasdae/dascore">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../../index.html" title="previous chapter">DASCore</a></li>
+      <li>Next: <a href="../installation.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, DASDAE Development Team.
+      
+    </div>
+
+    
+    <a href="https://github.com/DASDAE/dascore" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

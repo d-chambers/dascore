@@ -1,0 +1,338 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>dascore.core.spool module &#8212; DASCore 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dascore.io package" href="dascore.io.html" />
+    <link rel="prev" title="dascore.core.schema module" href="dascore.core.schema.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-dascore.core.spool">
+<span id="dascore-core-spool-module"></span><h1>dascore.core.spool module<a class="headerlink" href="#module-dascore.core.spool" title="Permalink to this heading">¶</a></h1>
+<p>Module for spools, containers of patches.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.core.spool.BaseSpool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">BaseSpool</span></span><a class="reference internal" href="../_modules/dascore/core/spool.html#BaseSpool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.BaseSpool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Spool Abstract Base Class (ABC) for defining Spool interface.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.spool.BaseSpool.chunk">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#BaseSpool.chunk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.BaseSpool.chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chunk the data in the spool along specified dimensions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overlap</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">datetime64</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Timestamp</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – The amount of overlap between each segment, starting with the end of
+first patch. Negative values can be used to induce gaps.</p></li>
+<li><p><strong>keep_partial</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True, keep the segments which are smaller than chunk size.
+This often occurs because of data gaps or at end of chunks.</p></li>
+<li><p><strong>snap_coords</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True, snap the coords on joined patches such that the spacing
+remains constant.</p></li>
+<li><p><strong>tolerance</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The number of samples a block of data can be spaced and still be
+considered contiguous.</p></li>
+<li><p><strong>kwargs</strong> – kwargs are used to specify the dimension along which to chunk, eg:
+<cite>time=10</cite> chunks along the time axis in 10 second increments.</p></li>
+<li><p><strong>self</strong> (<em>SpoolType</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.spool.BaseSpool.get_contents">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_contents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#BaseSpool.get_contents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.BaseSpool.get_contents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dataframe of the patches that will be returned by the spool.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> (<em>SpoolType</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.spool.BaseSpool.select">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#BaseSpool.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.BaseSpool.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select only part of the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> (<em>SpoolType</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.spool.BaseSpool.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#BaseSpool.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.BaseSpool.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the contents of the spool and returns a spool.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> (<em>SpoolType</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.core.spool.DataFrameSpool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">DataFrameSpool</span></span><a class="reference internal" href="../_modules/dascore/core/spool.html#DataFrameSpool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.DataFrameSpool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dascore.core.spool.BaseSpool" title="dascore.core.spool.BaseSpool"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSpool</span></code></a></p>
+<p>A spool whose contents are managed by a dataframe.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.spool.DataFrameSpool.chunk">
+<span class="sig-name descname"><span class="pre">chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#DataFrameSpool.chunk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.DataFrameSpool.chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chunk the data in the spool along specified dimensions.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>overlap</strong></dt><dd><blockquote>
+<div><p>The amount of overlap between each segment, starting with the end of
+first patch. Negative values can be used to induce gaps.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>keep_partial</dt><dd><p>If True, keep the segments which are smaller than chunk size.
+This often occurs because of data gaps or at end of chunks.</p>
+</dd>
+<dt>snap_coords</dt><dd><p>If True, snap the coords on joined patches such that the spacing
+remains constant.</p>
+</dd>
+<dt>tolerance</dt><dd><p>The number of samples a block of data can be spaced and still be
+considered contiguous.</p>
+</dd>
+<dt>kwargs</dt><dd><p>kwargs are used to specify the dimension along which to chunk, eg:
+<cite>time=10</cite> chunks along the time axis in 10 second increments.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>:rtype:</strong><span class="classifier">py:class:<cite>~typing.Self</cite></span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>self</strong> (<em>SpoolType</em>) – </p></li>
+<li><p><strong>overlap</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>, </em><em>str</em><em>, </em><em>datetime64</em><em>, </em><em>Timestamp</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>keep_partial</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Self</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.spool.DataFrameSpool.get_contents">
+<span class="sig-name descname"><span class="pre">get_contents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#DataFrameSpool.get_contents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.DataFrameSpool.get_contents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dataframe of the patches that will be returned by the spool.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.spool.DataFrameSpool.new_from_df">
+<span class="sig-name descname"><span class="pre">new_from_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#DataFrameSpool.new_from_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.DataFrameSpool.new_from_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new instance from dataframes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.spool.DataFrameSpool.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#DataFrameSpool.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.DataFrameSpool.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sub-select certain dimensions for Spool</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.core.spool.MemorySpool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">MemorySpool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#MemorySpool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.MemorySpool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dascore.core.spool.DataFrameSpool" title="dascore.core.spool.DataFrameSpool"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrameSpool</span></code></a></p>
+<p>A Spool for storing patches in memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>PatchType</em><em>, </em><em>Sequence</em><em>[</em><em>PatchType</em><em>]</em><em>]</em><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.core.spool.get_spool">
+<span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">get_spool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#get_spool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.get_spool" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">get_spool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">get_spool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">get_spool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spool</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">get_spool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patch_list</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">get_spool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patch_list</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Get a spool from an object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#dascore.core.spool.BaseSpool" title="dascore.core.spool.BaseSpool"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSpool</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">PatchType</span></code>, bound= dascore.Patch)]]) – An object from which a spool can be derived.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">SpoolType</span></code>, bound= dascore.Spool)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.core.spool.spool_from_patch_list">
+<span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">spool_from_patch_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patch_list</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#spool_from_patch_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.spool_from_patch_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a spool from a sequence of patches.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.core.spool.spool_from_spool">
+<span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">spool_from_spool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spool</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#spool_from_spool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.spool_from_spool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a spool from a spool.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.core.spool.spool_from_str">
+<span class="sig-prename descclassname"><span class="pre">dascore.core.spool.</span></span><span class="sig-name descname"><span class="pre">spool_from_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/spool.html#spool_from_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.spool.spool_from_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a spool from a path.</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../index.html">DASCore</a></h1>
+
+
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../markdown/executable/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/executable/working_with_files.html">Working with Files</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/dasdae/dascore">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/support.html">Support</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">dascore</a><ul>
+  <li><a href="dascore.html">dascore package</a><ul>
+  <li><a href="dascore.core.html">dascore.core package</a><ul>
+      <li>Previous: <a href="dascore.core.schema.html" title="previous chapter">dascore.core.schema module</a></li>
+      <li>Next: <a href="dascore.io.html" title="next chapter">dascore.io package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, DASDAE Development Team.
+      
+    </div>
+
+    
+    <a href="https://github.com/DASDAE/dascore" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

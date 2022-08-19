@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>dascore.core.schema module &#8212; DASCore 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dascore.core.spool module" href="dascore.core.spool.html" />
+    <link rel="prev" title="dascore.core.patch module" href="dascore.core.patch.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-dascore.core.schema">
+<span id="dascore-core-schema-module"></span><h1>dascore.core.schema module<a class="headerlink" href="#module-dascore.core.schema" title="Permalink to this heading">¶</a></h1>
+<p>Pydantic schemas.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.core.schema.DateTime64">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.core.schema.</span></span><span class="sig-name descname"><span class="pre">DateTime64</span></span><a class="reference internal" href="../_modules/dascore/core/schema.html#DateTime64"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.schema.DateTime64" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dascore.core.schema.SimpleValidator" title="dascore.core.schema.SimpleValidator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleValidator</span></code></a></p>
+<p>Datetime64 validator</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.schema.DateTime64.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dascore.core.schema.DateTime64.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>, </em><em>str</em><em>, </em><em>datetime64</em><em>, </em><em>Timestamp</em><em>, </em><em>array</em><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchFileSummary">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.core.schema.</span></span><span class="sig-name descname"><span class="pre">PatchFileSummary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/schema.html#PatchFileSummary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.schema.PatchFileSummary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dascore.core.schema.PatchSummary" title="dascore.core.schema.PatchSummary"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatchSummary</span></code></a></p>
+<p>The expected minimum attributes for a Patch/spool file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_type</strong> (<em>str</em>) – </p></li>
+<li><p><strong>category</strong> (<em>str</em>) – </p></li>
+<li><p><strong>time_min</strong> (<a class="reference internal" href="#dascore.core.schema.DateTime64" title="dascore.core.schema.DateTime64"><em>DateTime64</em></a>) – </p></li>
+<li><p><strong>time_max</strong> (<a class="reference internal" href="#dascore.core.schema.DateTime64" title="dascore.core.schema.DateTime64"><em>DateTime64</em></a>) – </p></li>
+<li><p><strong>d_time</strong> (<a class="reference internal" href="#dascore.core.schema.TimeDelta64" title="dascore.core.schema.TimeDelta64"><em>TimeDelta64</em></a>) – </p></li>
+<li><p><strong>distance_min</strong> (<em>float</em>) – </p></li>
+<li><p><strong>distance_max</strong> (<em>float</em>) – </p></li>
+<li><p><strong>d_distance</strong> (<em>float</em>) – </p></li>
+<li><p><strong>instrument_id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>dims</strong> (<em>str</em>) – </p></li>
+<li><p><strong>tag</strong> (<em>str</em>) – </p></li>
+<li><p><strong>station</strong> (<em>str</em>) – </p></li>
+<li><p><strong>network</strong> (<em>str</em>) – </p></li>
+<li><p><strong>file_version</strong> (<em>str</em>) – </p></li>
+<li><p><strong>file_format</strong> (<em>str</em>) – </p></li>
+<li><p><strong>path</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchFileSummary.file_format">
+<span class="sig-name descname"><span class="pre">file_format</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dascore.core.schema.PatchFileSummary.file_format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchFileSummary.file_version">
+<span class="sig-name descname"><span class="pre">file_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dascore.core.schema.PatchFileSummary.file_version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchFileSummary.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dascore.core.schema.PatchFileSummary.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.core.schema.</span></span><span class="sig-name descname"><span class="pre">PatchSummary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/schema.html#PatchSummary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.schema.PatchSummary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>The expected minimum attributes for a Patch attrs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_type</strong> (<em>str</em>) – </p></li>
+<li><p><strong>category</strong> (<em>str</em>) – </p></li>
+<li><p><strong>time_min</strong> (<a class="reference internal" href="#dascore.core.schema.DateTime64" title="dascore.core.schema.DateTime64"><em>DateTime64</em></a>) – </p></li>
+<li><p><strong>time_max</strong> (<a class="reference internal" href="#dascore.core.schema.DateTime64" title="dascore.core.schema.DateTime64"><em>DateTime64</em></a>) – </p></li>
+<li><p><strong>d_time</strong> (<a class="reference internal" href="#dascore.core.schema.TimeDelta64" title="dascore.core.schema.TimeDelta64"><em>TimeDelta64</em></a>) – </p></li>
+<li><p><strong>distance_min</strong> (<em>float</em>) – </p></li>
+<li><p><strong>distance_max</strong> (<em>float</em>) – </p></li>
+<li><p><strong>d_distance</strong> (<em>float</em>) – </p></li>
+<li><p><strong>instrument_id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>dims</strong> (<em>str</em>) – </p></li>
+<li><p><strong>tag</strong> (<em>str</em>) – </p></li>
+<li><p><strong>station</strong> (<em>str</em>) – </p></li>
+<li><p><strong>network</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="../_modules/dascore/core/schema.html#PatchSummary.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.schema.PatchSummary.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Configuration for Patch Summary</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.Config.json_encoders">
+<span class="sig-name descname"><span class="pre">json_encoders</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'numpy.datetime64'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">PatchSummary.Config.&lt;lambda&gt;&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.timedelta64'&gt;:</span> <span class="pre">&lt;function</span> <span class="pre">PatchSummary.Config.&lt;lambda&gt;&gt;}</span></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.Config.json_encoders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.category">
+<span class="sig-name descname"><span class="pre">category</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.d_distance">
+<span class="sig-name descname"><span class="pre">d_distance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.d_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.d_time">
+<span class="sig-name descname"><span class="pre">d_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#dascore.core.schema.TimeDelta64" title="dascore.core.schema.TimeDelta64"><span class="pre">TimeDelta64</span></a></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.d_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.data_type">
+<span class="sig-name descname"><span class="pre">data_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.data_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.dims">
+<span class="sig-name descname"><span class="pre">dims</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.dims" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.distance_max">
+<span class="sig-name descname"><span class="pre">distance_max</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.distance_max" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.distance_min">
+<span class="sig-name descname"><span class="pre">distance_min</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.distance_min" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.instrument_id">
+<span class="sig-name descname"><span class="pre">instrument_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.instrument_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.network">
+<span class="sig-name descname"><span class="pre">network</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.network" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.station">
+<span class="sig-name descname"><span class="pre">station</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.station" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.tag">
+<span class="sig-name descname"><span class="pre">tag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.time_max">
+<span class="sig-name descname"><span class="pre">time_max</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#dascore.core.schema.DateTime64" title="dascore.core.schema.DateTime64"><span class="pre">DateTime64</span></a></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.time_max" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummary.time_min">
+<span class="sig-name descname"><span class="pre">time_min</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#dascore.core.schema.DateTime64" title="dascore.core.schema.DateTime64"><span class="pre">DateTime64</span></a></em><a class="headerlink" href="#dascore.core.schema.PatchSummary.time_min" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummaryWithHistory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.core.schema.</span></span><span class="sig-name descname"><span class="pre">PatchSummaryWithHistory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/schema.html#PatchSummaryWithHistory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.schema.PatchSummaryWithHistory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dascore.core.schema.PatchSummary" title="dascore.core.schema.PatchSummary"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatchSummary</span></code></a></p>
+<p>Patch summary which includes history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_type</strong> (<em>str</em>) – </p></li>
+<li><p><strong>category</strong> (<em>str</em>) – </p></li>
+<li><p><strong>time_min</strong> (<a class="reference internal" href="#dascore.core.schema.DateTime64" title="dascore.core.schema.DateTime64"><em>DateTime64</em></a>) – </p></li>
+<li><p><strong>time_max</strong> (<a class="reference internal" href="#dascore.core.schema.DateTime64" title="dascore.core.schema.DateTime64"><em>DateTime64</em></a>) – </p></li>
+<li><p><strong>d_time</strong> (<a class="reference internal" href="#dascore.core.schema.TimeDelta64" title="dascore.core.schema.TimeDelta64"><em>TimeDelta64</em></a>) – </p></li>
+<li><p><strong>distance_min</strong> (<em>float</em>) – </p></li>
+<li><p><strong>distance_max</strong> (<em>float</em>) – </p></li>
+<li><p><strong>d_distance</strong> (<em>float</em>) – </p></li>
+<li><p><strong>instrument_id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>dims</strong> (<em>str</em>) – </p></li>
+<li><p><strong>tag</strong> (<em>str</em>) – </p></li>
+<li><p><strong>station</strong> (<em>str</em>) – </p></li>
+<li><p><strong>network</strong> (<em>str</em>) – </p></li>
+<li><p><strong>history</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Sequence</em><em>[</em><em>str</em><em>]</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dascore.core.schema.PatchSummaryWithHistory.history">
+<span class="sig-name descname"><span class="pre">history</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dascore.core.schema.PatchSummaryWithHistory.history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.core.schema.SimpleValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.core.schema.</span></span><span class="sig-name descname"><span class="pre">SimpleValidator</span></span><a class="reference internal" href="../_modules/dascore/core/schema.html#SimpleValidator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.schema.SimpleValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A custom class for getting simple validation behavior in pydantic.</p>
+<p>Subclass, then define function to be used as validator. func</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.schema.SimpleValidator.func">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/schema.html#SimpleValidator.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.schema.SimpleValidator.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>A method to overwrite with custom validation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.schema.SimpleValidator.validate">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/core/schema.html#SimpleValidator.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.schema.SimpleValidator.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply call func.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.core.schema.TimeDelta64">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.core.schema.</span></span><span class="sig-name descname"><span class="pre">TimeDelta64</span></span><a class="reference internal" href="../_modules/dascore/core/schema.html#TimeDelta64"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.core.schema.TimeDelta64" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dascore.core.schema.SimpleValidator" title="dascore.core.schema.SimpleValidator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleValidator</span></code></a></p>
+<p>Datetime64 validator</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.core.schema.TimeDelta64.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dascore.core.schema.TimeDelta64.func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>array</em><em>, </em><em>str</em><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../index.html">DASCore</a></h1>
+
+
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../markdown/executable/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/executable/working_with_files.html">Working with Files</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/dasdae/dascore">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/support.html">Support</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">dascore</a><ul>
+  <li><a href="dascore.html">dascore package</a><ul>
+  <li><a href="dascore.core.html">dascore.core package</a><ul>
+      <li>Previous: <a href="dascore.core.patch.html" title="previous chapter">dascore.core.patch module</a></li>
+      <li>Next: <a href="dascore.core.spool.html" title="next chapter">dascore.core.spool module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, DASDAE Development Team.
+      
+    </div>
+
+    
+    <a href="https://github.com/DASDAE/dascore" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

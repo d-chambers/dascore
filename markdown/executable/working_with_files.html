@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Working with Files &#8212; DASCore 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Contributing" href="../contributing/contributing.html" />
+    <link rel="prev" title="Installation" href="../installation.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="working-with-files">
+<h1>Working with Files<a class="headerlink" href="#working-with-files" title="Permalink to this heading">¶</a></h1>
+<p>DASCore contains two data structures which are useful for working with directories of
+fiber data.</p>
+<section id="filespool">
+<h2>FileSpool<a class="headerlink" href="#filespool" title="Permalink to this heading">¶</a></h2>
+<p>The file spool is used to retrieve data from a directory of dascore-readable files.
+It has the same interface as other spools mentioned in the
+<a class="reference internal" href="quickstart.html"><span class="doc std std-doc">quickstart</span></a>.</p>
+<p>For example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span>
+<span class="kn">from</span> <span class="nn">dascore</span> <span class="kn">import</span> <span class="n">examples</span> <span class="k">as</span> <span class="n">ex</span>
+
+<span class="c1"># Get a directory with several files</span>
+<span class="n">diverse_spool</span> <span class="o">=</span> <span class="n">dascore</span><span class="o">.</span><span class="n">get_example_spool</span><span class="p">(</span><span class="s1">&#39;diverse_das&#39;</span><span class="p">)</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">spool_to_directory</span><span class="p">(</span><span class="n">diverse_spool</span><span class="p">)</span>
+
+<span class="c1"># Create a spool for interacting with the files in the directory.</span>
+<span class="n">spool</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">dascore</span><span class="o">.</span><span class="n">get_spool</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="s1">&#39;das2&#39;</span><span class="p">)</span>  <span class="c1"># sub-select das2 network</span>
+    <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;2022-01-01&#39;</span><span class="p">))</span>  <span class="c1"># unselect anything after 2022</span>
+    <span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># change the chunking of the patches</span>
+<span class="p">)</span>
+
+<span class="c1"># Iterate each patch and do something with it</span>
+<span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="n">spool</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/rich/live.py:229: UserWarning: install "ipywidgets" for
+Jupyter support
+  warnings.warn('install "ipywidgets" for Jupyter support')
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/rich/live.py:229: UserWarning: install "ipywidgets" for
+Jupyter support
+  warnings.warn('install "ipywidgets" for Jupyter support')
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/rich/live.py:229: UserWarning: install "ipywidgets" for
+Jupyter support
+  warnings.warn('install "ipywidgets" for Jupyter support')
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/rich/live.py:229: UserWarning: install "ipywidgets" for
+Jupyter support
+  warnings.warn('install "ipywidgets" for Jupyter support')
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/rich/live.py:229: UserWarning: install "ipywidgets" for
+Jupyter support
+  warnings.warn('install "ipywidgets" for Jupyter support')
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">/usr/share/miniconda3/envs/test/lib/python3.9/site-packages/rich/live.py:229: UserWarning: install "ipywidgets" for
+Jupyter support
+  warnings.warn('install "ipywidgets" for Jupyter support')
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+</pre>
+</div><div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="nn">Input In [1],</span> in <span class="ni">&lt;cell line: 10&gt;</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">spool_to_directory</span><span class="p">(</span><span class="n">diverse_spool</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="c1"># Create a spool for interacting with the files in the directory.</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span> <span class="n">spool</span> <span class="o">=</span> <span class="p">(</span>
+<span class="ne">---&gt; </span><span class="mi">10</span>     <span class="n">dascore</span><span class="o">.</span><span class="n">get_spool</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">11</span>     <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="s1">&#39;das2&#39;</span><span class="p">)</span>  <span class="c1"># sub-select das2 network</span>
+<span class="g g-Whitespace">     </span><span class="mi">12</span>     <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;2022-01-01&#39;</span><span class="p">))</span>  <span class="c1"># unselect anything after 2022</span>
+<span class="g g-Whitespace">     </span><span class="mi">13</span>     <span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># change the chunking of the patches</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span> <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="c1"># Iterate each patch and do something with it</span>
+<span class="g g-Whitespace">     </span><span class="mi">17</span> <span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="n">spool</span><span class="p">:</span>
+
+<span class="nn">File ~/work/dascore/dascore/dascore/core/spool.py:219,</span> in <span class="ni">DataFrameSpool.chunk</span><span class="nt">(self, overlap, keep_partial, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">209</span> <span class="nd">@compose_docstring</span><span class="p">(</span><span class="n">doc</span><span class="o">=</span><span class="n">BaseSpool</span><span class="o">.</span><span class="n">chunk</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">210</span> <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">211</span>     <span class="bp">self</span><span class="p">:</span> <span class="n">SpoolType</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">214</span>     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">215</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">216</span>     <span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">217</span><span class="sd">     {doc}</span>
+<span class="g g-Whitespace">    </span><span class="mi">218</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">219</span>     <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_drop_columns</span><span class="p">),</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">220</span>     <span class="n">chunker</span> <span class="o">=</span> <span class="n">ChunkManager</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">221</span>         <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">222</span>         <span class="n">keep_partial</span><span class="o">=</span><span class="n">keep_partial</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">223</span>         <span class="n">group_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_group_columns</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">224</span>         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">225</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">226</span>     <span class="n">in_df</span><span class="p">,</span> <span class="n">out_df</span> <span class="o">=</span> <span class="n">chunker</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+<span class="nn">File ~/work/dascore/dascore/dascore/utils/misc.py:265,</span> in <span class="ni">CacheDescriptor.__get__</span><span class="nt">(self, instance, owner)</span>
+<span class="g g-Whitespace">    </span><span class="mi">263</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">264</span>     <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_func_name</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">265</span>     <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">266</span>     <span class="n">cache</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span>
+<span class="g g-Whitespace">    </span><span class="mi">267</span> <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">]</span>
+
+<span class="nn">File ~/work/dascore/dascore/dascore/clients/filespool.py:60,</span> in <span class="ni">FileSpool._get_df</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">     </span><span class="mi">58</span> <span class="sd">&quot;&quot;&quot;Get the dataframe of current contents.&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">59</span> <span class="n">index_contents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexer</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_kwargs</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">60</span> <span class="n">out</span> <span class="o">=</span> <span class="n">adjust_segments</span><span class="p">(</span><span class="n">index_contents</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">61</span> <span class="k">return</span> <span class="n">out</span>
+
+<span class="nn">File ~/work/dascore/dascore/dascore/utils/pd.py:236,</span> in <span class="ni">adjust_segments</span><span class="nt">(df, ignore_bad_kwargs, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">223</span> <span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">224</span><span class="sd"> Filter a dataframe and adjust its limits.</span>
+<span class="g g-Whitespace">    </span><span class="mi">225</span><span class="sd"> </span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">    </span><span class="mi">233</span><span class="sd">     The keyword arguments for filtering.</span>
+<span class="g g-Whitespace">    </span><span class="mi">234</span><span class="sd"> &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">235</span> <span class="c1"># apply filtering</span>
+<span class="ne">--&gt; </span><span class="mi">236</span> <span class="n">out</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">filter_df</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">ignore_bad_kwargs</span><span class="o">=</span><span class="n">ignore_bad_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)]</span>
+<span class="g g-Whitespace">    </span><span class="mi">237</span> <span class="c1"># find slice kwargs, get series corresponding to interval columns</span>
+<span class="g g-Whitespace">    </span><span class="mi">238</span> <span class="k">try</span><span class="p">:</span>
+
+<span class="nn">File ~/work/dascore/dascore/dascore/utils/pd.py:279,</span> in <span class="ni">filter_df</span><span class="nt">(df, ignore_bad_kwargs, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">277</span> <span class="n">min_max_query</span> <span class="o">=</span> <span class="n">_convert_times</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">_get_min_max_query</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">df</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">278</span> <span class="n">range_query</span> <span class="o">=</span> <span class="n">_add_range_query</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">ignore_bad_kwargs</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">279</span> <span class="n">multicolumn_range_query</span> <span class="o">=</span> <span class="n">_convert_times</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">range_query</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">280</span> <span class="n">equality_query</span><span class="p">,</span> <span class="n">collection_query</span> <span class="o">=</span> <span class="n">_get_flat_and_collection_queries</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">281</span> <span class="c1"># get a blank index of True for filters</span>
+
+<span class="nn">File ~/work/dascore/dascore/dascore/utils/pd.py:157,</span> in <span class="ni">_convert_times</span><span class="nt">(df, some_dict)</span>
+<span class="g g-Whitespace">    </span><span class="mi">153</span> <span class="n">datetime_keys</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime_cols</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">some_dict</span><span class="p">))</span> <span class="o">|</span> <span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">154</span>     <span class="n">non_min_max_cols</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">some_dict</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">155</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">156</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">datetime_keys</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">157</span>     <span class="n">some_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_datetime64</span><span class="p">(</span><span class="n">some_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+<span class="g g-Whitespace">    </span><span class="mi">158</span> <span class="c1"># convert queries related to time delta into timedelta64</span>
+<span class="g g-Whitespace">    </span><span class="mi">159</span> <span class="n">timedelta_cols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+<span class="nn">File /usr/share/miniconda3/envs/test/lib/python3.9/functools.py:888,</span> in <span class="ni">singledispatch.&lt;locals&gt;.wrapper</span><span class="nt">(*args, **kw)</span>
+<span class="g g-Whitespace">    </span><span class="mi">884</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">885</span>     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">funcname</span><span class="si">}</span><span class="s1"> requires at least &#39;</span>
+<span class="g g-Whitespace">    </span><span class="mi">886</span>                     <span class="s1">&#39;1 positional argument&#39;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">888</span> <span class="k">return</span> <span class="n">dispatch</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+<span class="nn">File ~/work/dascore/dascore/dascore/utils/time.py:54,</span> in <span class="ni">array_to_datetime64</span><span class="nt">(array)</span>
+<span class="g g-Whitespace">     </span><span class="mi">51</span> <span class="n">array</span><span class="p">[</span><span class="n">nans</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># temporary replace NaNs</span>
+<span class="g g-Whitespace">     </span><span class="mi">52</span> <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span>     <span class="c1"># separate seconds and factions, assume ns precision</span>
+<span class="ne">---&gt; </span><span class="mi">54</span>     <span class="n">int_sec</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;datetime64[s]&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">55</span> <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">56</span>     <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">to_datetime64</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">array</span><span class="p">])</span>
+
+<span class="ne">ValueError</span>: invalid literal for int() with base 10: &#39;2022-01-01&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="directory-indexer">
+<h2>Directory Indexer<a class="headerlink" href="#directory-indexer" title="Permalink to this heading">¶</a></h2>
+<p>The ‘DirectoryIndexer’ is used to track the contents of a directory which
+contains fiber data. It creates a small, hidden HDF index file at the top
+of the directory which can be efficiently queried for retrieving data
+(it is used internally by the <code class="docutils literal notranslate"><span class="pre">DirectorySpool</span></code>) or to ask questions about
+the data archive.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dascore</span>
+<span class="kn">from</span> <span class="nn">dascore.io.indexer</span> <span class="kn">import</span> <span class="n">DirectoryIndexer</span>
+<span class="kn">from</span> <span class="nn">dascore</span> <span class="kn">import</span> <span class="n">examples</span> <span class="k">as</span> <span class="n">ex</span>
+
+<span class="c1"># Get a directory with several files</span>
+<span class="n">diverse_spool</span> <span class="o">=</span> <span class="n">dascore</span><span class="o">.</span><span class="n">get_example_spool</span><span class="p">(</span><span class="s1">&#39;diverse_das&#39;</span><span class="p">)</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">spool_to_directory</span><span class="p">(</span><span class="n">diverse_spool</span><span class="p">)</span>
+
+<span class="c1"># Create an indexer and update the index. This will include any new files</span>
+<span class="c1"># with timestamps newer than the last update, or create a new HDF index file</span>
+<span class="c1"># if one does not yet exist.</span>
+<span class="n">indexer</span> <span class="o">=</span> <span class="n">DirectoryIndexer</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+<span class="c1"># get the contents of the directory&#39;s files</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">indexer</span><span class="o">.</span><span class="n">get_contents</span><span class="p">()</span>
+
+<span class="c1"># This dataframe can be used to ascertain data availability, detect gaps, etc.</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">DASCore</a></h1>
+
+
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Working with Files</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/dasdae/dascore">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="../contributing/contributing.html" title="next chapter">Contributing</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, DASDAE Development Team.
+      
+    </div>
+
+    
+    <a href="https://github.com/DASDAE/dascore" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

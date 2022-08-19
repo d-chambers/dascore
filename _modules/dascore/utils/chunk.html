@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dascore.utils.chunk &#8212; DASCore 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for dascore.utils.chunk</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utilities for chunking dataframes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">dascore.constants</span> <span class="kn">import</span> <span class="n">numeric_types</span><span class="p">,</span> <span class="n">timeable_types</span>
+<span class="kn">from</span> <span class="nn">dascore.exceptions</span> <span class="kn">import</span> <span class="n">ParameterError</span>
+<span class="kn">from</span> <span class="nn">dascore.utils.pd</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_column_names_from_dim</span><span class="p">,</span>
+    <span class="n">get_dim_names_from_columns</span><span class="p">,</span>
+    <span class="n">get_interval_columns</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dascore.utils.time</span> <span class="kn">import</span> <span class="n">is_datetime64</span><span class="p">,</span> <span class="n">to_datetime64</span><span class="p">,</span> <span class="n">to_timedelta64</span>
+
+
+<div class="viewcode-block" id="get_intervals"><a class="viewcode-back" href="../../../api/dascore.utils.chunk.html#dascore.utils.chunk.get_intervals">[docs]</a><span class="k">def</span> <span class="nf">get_intervals</span><span class="p">(</span>
+    <span class="n">start</span><span class="p">,</span>
+    <span class="n">stop</span><span class="p">,</span>
+    <span class="n">length</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">keep_partials</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a range of values with optional overlaps.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start</span>
+<span class="sd">        The start of the interval.</span>
+<span class="sd">    stop</span>
+<span class="sd">        The end of the interval.</span>
+<span class="sd">    length</span>
+<span class="sd">        The length of the segments.</span>
+<span class="sd">    overlap</span>
+<span class="sd">        The overlap of the start of each interval with the end</span>
+<span class="sd">        of the previous interval.</span>
+<span class="sd">    step</span>
+<span class="sd">        If not None, subtract step (the sampling interval) from the end</span>
+<span class="sd">        values so that the intervals do not overlap by one sample.</span>
+<span class="sd">    keep_partials</span>
+<span class="sd">        If True, keep the segments which are smaller than chunksize.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A 2D array where first column is start and second column is end.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># when length is null just use entire length</span>
+    <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">is_datetime64</span><span class="p">(</span><span class="n">start</span><span class="p">):</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">to_datetime64</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">is_datetime64</span><span class="p">(</span><span class="n">start</span><span class="p">):</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">to_timedelta64</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+    <span class="c1"># get variable and perform checks</span>
+    <span class="n">overlap</span> <span class="o">=</span> <span class="n">length</span> <span class="o">*</span> <span class="mi">0</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">overlap</span> <span class="k">else</span> <span class="n">overlap</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">length</span> <span class="o">*</span> <span class="mi">0</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">step</span> <span class="k">else</span> <span class="n">step</span>
+    <span class="k">assert</span> <span class="n">overlap</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">,</span> <span class="s2">&quot;Overlap must be less than step&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">length</span><span class="p">,</span> <span class="s2">&quot;Range must be greater than step&quot;</span>
+    <span class="c1"># reference with no overlap</span>
+    <span class="n">new_step</span> <span class="o">=</span> <span class="n">length</span> <span class="o">-</span> <span class="n">overlap</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">+</span> <span class="n">new_step</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">new_step</span><span class="p">)</span>
+    <span class="n">ends</span> <span class="o">=</span> <span class="n">reference</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">length</span> <span class="o">-</span> <span class="n">step</span>
+    <span class="n">starts</span> <span class="o">=</span> <span class="n">reference</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># trim end to not surpass stop</span>
+    <span class="k">if</span> <span class="n">ends</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">stop</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_partials</span><span class="p">:</span>
+            <span class="n">ends</span><span class="p">,</span> <span class="n">starts</span> <span class="o">=</span> <span class="n">ends</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">starts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ends</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">stop</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
+
+
+<div class="viewcode-block" id="ChunkManager"><a class="viewcode-back" href="../../../api/dascore.utils.chunk.html#dascore.utils.chunk.ChunkManager">[docs]</a><span class="k">class</span> <span class="nc">ChunkManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for managing the chunking of data defined in a dataframe.</span>
+
+<span class="sd">    The chunk manager handles both splitting and joining of contiguous,</span>
+<span class="sd">    or near-contiguous, blocks of data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    overlap</span>
+<span class="sd">        The amount of overlap between each segment, starting with the end of</span>
+<span class="sd">        first row. Negative values can be used for inducing gaps.</span>
+<span class="sd">    group_columns</span>
+<span class="sd">        A sequence of column names which should be used for sorting groups.</span>
+<span class="sd">    keep_partial</span>
+<span class="sd">        If True, keep segments which are shorter than chunk size (at end of</span>
+<span class="sd">        contiguous blocks)</span>
+<span class="sd">    tolerance</span>
+<span class="sd">        The upper limit of a gap to tolerate in terms of the sampling</span>
+<span class="sd">        along the desired dimension. E.G., the default value means entities</span>
+<span class="sd">        with gaps &lt;= 1.5 * d_{name} will be merged.</span>
+<span class="sd">    **kawrgs</span>
+<span class="sd">        kwargs specify the column along which to chunk. The key specifies the</span>
+<span class="sd">        column along which to chunk, typically, `time` or `distance`, and the</span>
+<span class="sd">        value specifies the chunk size. A value of None means to chunk on all</span>
+<span class="sd">        available data (e.g. merge all data).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class is used internally by `dc.Spool.chunk`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">timeable_types</span><span class="p">,</span> <span class="n">numeric_types</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">group_columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_partial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">tolerance</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_overlap</span> <span class="o">=</span> <span class="n">overlap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_group_columns</span> <span class="o">=</span> <span class="n">group_columns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_keep_partials</span> <span class="o">=</span> <span class="n">keep_partial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tolerance</span> <span class="o">=</span> <span class="n">tolerance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_chunker</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_validate_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Ensure kwargs is len one and has a valid&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">),)</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_validate_chunker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Ensure selected parameters are compatible.&quot;&quot;&quot;</span>
+        <span class="c1"># chunker is used for merging</span>
+        <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keep_partials</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overlap</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;When chunk value is None (ie Chunker is used for merging) &quot;</span>
+                    <span class="s2">&quot;both _keep_partials and self._overlap must not be selected.&quot;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">ParameterError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_continuity_group_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a series of ints indicating continuity group.&quot;&quot;&quot;</span>
+        <span class="c1"># start by sorting according to start time</span>
+        <span class="n">arg_ser</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">arg_ser</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">arg_ser</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
+        <span class="n">start_sorted</span><span class="p">,</span> <span class="n">stop_sorted</span><span class="p">,</span> <span class="n">step_sorted</span> <span class="o">=</span> <span class="n">start</span><span class="p">[</span><span class="n">args</span><span class="p">],</span> <span class="n">stop</span><span class="p">[</span><span class="n">args</span><span class="p">],</span> <span class="n">step</span><span class="p">[</span><span class="n">args</span><span class="p">]</span>
+        <span class="c1"># next get cummax of endtimes and detect gaps</span>
+        <span class="n">stop_cum_max</span> <span class="o">=</span> <span class="n">stop_sorted</span><span class="o">.</span><span class="n">cummax</span><span class="p">()</span>
+        <span class="n">end_markers</span> <span class="o">=</span> <span class="n">stop_cum_max</span><span class="o">.</span><span class="n">shift</span><span class="p">()</span> <span class="o">+</span> <span class="n">step_sorted</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tolerance</span>
+        <span class="n">has_gap</span> <span class="o">=</span> <span class="n">start_sorted</span> <span class="o">&gt;</span> <span class="n">end_markers</span>
+        <span class="n">group_num</span> <span class="o">=</span> <span class="n">has_gap</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">group_num</span><span class="p">[</span><span class="n">start</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_duration_overlap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get duration and overlap from kwargs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">overlap</span> <span class="o">=</span> <span class="n">overlap</span> <span class="k">if</span> <span class="n">overlap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overlap</span>
+        <span class="c1"># cast step to time delta if start is datetime</span>
+        <span class="k">if</span> <span class="n">is_datetime64</span><span class="p">(</span><span class="n">start</span><span class="p">):</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">to_timedelta64</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+            <span class="n">overlap</span> <span class="o">=</span> <span class="n">to_timedelta64</span><span class="p">(</span><span class="n">overlap</span><span class="p">)</span>
+        <span class="n">over</span> <span class="o">=</span> <span class="n">overlap</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">isnull</span><span class="p">(</span><span class="n">overlap</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">step</span> <span class="o">*</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">duration</span><span class="p">,</span> <span class="n">over</span>
+
+    <span class="k">def</span> <span class="nf">_create_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_stop</span><span class="p">,</span> <span class="n">gnum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reconstruct the dataframe.&quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">start_stop</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_min&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_max&quot;</span><span class="p">])</span>
+        <span class="n">merger</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">out</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">merger</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="n">merger</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Haven&#39;t yet implemented non-homogenous merging&quot;</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># add the group number for getting instruction df later</span>
+        <span class="n">out</span><span class="p">[</span><span class="s2">&quot;_group&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gnum</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+<div class="viewcode-block" id="ChunkManager.get_instruction_df"><a class="viewcode-back" href="../../../api/dascore.utils.chunk.html#dascore.utils.chunk.ChunkManager.get_instruction_df">[docs]</a>    <span class="k">def</span> <span class="nf">get_instruction_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_df</span><span class="p">,</span> <span class="n">chunked_df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a dataframe connecting the chunked dataframe to its origin.</span>
+
+<span class="sd">        This is used to connect source data to desired data after chunking</span>
+<span class="sd">        operation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        source_df</span>
+<span class="sd">            The dataframe before chunking</span>
+<span class="sd">        chunked_df</span>
+<span class="sd">            The chunked dataframe (output of `chunk` method)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># the group column should exist and the chunked groups should be subset</span>
+        <span class="c1"># of the source groups</span>
+        <span class="k">assert</span> <span class="s2">&quot;_group&quot;</span> <span class="ow">in</span> <span class="n">source_df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s2">&quot;_group&quot;</span> <span class="ow">in</span> <span class="n">chunked_df</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">chunked_groups</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chunked_df</span><span class="p">[</span><span class="s2">&quot;_group&quot;</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">chunked_groups</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source_df</span><span class="p">[</span><span class="s2">&quot;_group&quot;</span><span class="p">]))</span>
+        <span class="n">min_name</span><span class="p">,</span> <span class="n">max_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">_min&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">_max&quot;</span>
+        <span class="c1"># iterate each group and create instruction df</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">sub_chunk</span> <span class="ow">in</span> <span class="n">chunked_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;_group&quot;</span><span class="p">):</span>
+            <span class="n">sub_source</span> <span class="o">=</span> <span class="n">source_df</span><span class="p">[</span><span class="n">source_df</span><span class="p">[</span><span class="s2">&quot;_group&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">group</span><span class="p">]</span>
+            <span class="n">c_start</span><span class="p">,</span> <span class="n">c_stop</span><span class="p">,</span> <span class="n">c_step</span> <span class="o">=</span> <span class="n">get_interval_columns</span><span class="p">(</span><span class="n">sub_source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+            <span class="n">new_start</span><span class="p">,</span> <span class="n">new_stop</span><span class="p">,</span> <span class="n">new_step</span> <span class="o">=</span> <span class="n">get_interval_columns</span><span class="p">(</span><span class="n">sub_chunk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+            <span class="n">dims</span> <span class="o">=</span> <span class="n">get_dim_names_from_columns</span><span class="p">(</span><span class="n">sub_source</span><span class="p">)</span>
+            <span class="n">cols2keep</span> <span class="o">=</span> <span class="n">get_column_names_from_dim</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span>
+            <span class="c1"># TODO need to think more about this, a naive implementation for now</span>
+            <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">new_start</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">new_stop</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">new_stop</span><span class="o">.</span><span class="n">index</span>
+            <span class="p">):</span>
+                <span class="n">too_late</span> <span class="o">=</span> <span class="n">c_start</span> <span class="o">&gt;</span> <span class="n">stop</span>
+                <span class="n">too_early</span> <span class="o">=</span> <span class="n">c_stop</span> <span class="o">&lt;</span> <span class="n">start</span>
+                <span class="n">in_range</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">too_early</span> <span class="o">|</span> <span class="n">too_late</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="n">in_range</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;no original data source found!&quot;</span>
+                <span class="n">sub_df</span> <span class="o">=</span> <span class="n">sub_source</span><span class="p">[</span><span class="n">in_range</span><span class="p">][</span><span class="n">cols2keep</span><span class="p">]</span>
+                <span class="c1"># trim intervals to existing values</span>
+                <span class="n">sub_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sub_df</span><span class="p">[</span><span class="n">min_name</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">start</span><span class="p">,</span> <span class="n">min_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">start</span>
+                <span class="n">sub_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sub_df</span><span class="p">[</span><span class="n">max_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">stop</span><span class="p">,</span> <span class="n">max_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">stop</span>
+                <span class="n">sub_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;source_index&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sub_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">sub_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;current_index&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ind</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sub_df</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;source_index&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the group designation for df. This accounts for both time intervals</span>
+<span class="sd">        being consistent and group columns matching.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: Test if different stations bridge time span</span>
+        <span class="n">group_cont</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_continuity_group_number</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;d_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_group_columns</span> <span class="ow">or</span> <span class="p">[])</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cols</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+        <span class="n">col_groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">ngroup</span><span class="p">()</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="n">group_cont</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">col_groups</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">group</span>
+
+<div class="viewcode-block" id="ChunkManager.chunk"><a class="viewcode-back" href="../../../api/dascore.utils.chunk.html#dascore.utils.chunk.ChunkManager.chunk">[docs]</a>    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Chunk a dataframe into new contiguous segments.</span>
+
+<span class="sd">        The dataframe must have column names {key}_max, {key}_min, and d_{key}</span>
+<span class="sd">        where {key} is the key used in the kwargs.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        df</span>
+<span class="sd">            Input dataframe to chunk.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A tuple of the original dataframe with added column &#39;_group&#39; and an</span>
+<span class="sd">        output dataframe with column &#39;_group&#39;. The _group column is used</span>
+<span class="sd">        to link the two dataframes together.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get series of start/stop along requested dimension</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">get_interval_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+        <span class="n">dur</span><span class="p">,</span> <span class="n">overlap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_duration_overlap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="c1"># get group numbers</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_group</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="c1"># get max, min for each group and expand</span>
+        <span class="n">group_mins</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">group</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">group_maxs</span> <span class="o">=</span> <span class="n">stop</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">group</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="c1"># split/group dataframe into new chunks by iterating over each group.</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">gnum</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">=</span> <span class="n">group_mins</span><span class="p">[</span><span class="n">gnum</span><span class="p">],</span> <span class="n">group_maxs</span><span class="p">[</span><span class="n">gnum</span><span class="p">]</span>
+            <span class="n">current_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">group</span><span class="p">[</span><span class="n">group</span> <span class="o">==</span> <span class="n">gnum</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+            <span class="c1"># reconstruct DF</span>
+            <span class="n">new_start_stop</span> <span class="o">=</span> <span class="n">get_intervals</span><span class="p">(</span>
+                <span class="n">start</span><span class="p">,</span>
+                <span class="n">stop</span><span class="p">,</span>
+                <span class="n">dur</span><span class="p">,</span>
+                <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+                <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">keep_partials</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_keep_partials</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># create the newly chunked dataframe</span>
+            <span class="n">sub_new_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_df</span><span class="p">(</span><span class="n">current_df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">new_start_stop</span><span class="p">,</span> <span class="n">gnum</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sub_new_df</span><span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">_group</span><span class="o">=</span><span class="n">group</span><span class="p">),</span> <span class="n">out</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../../index.html">DASCore</a></h1>
+
+
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../markdown/executable/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../markdown/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../markdown/executable/working_with_files.html">Working with Files</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/dasdae/dascore">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../markdown/contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../markdown/support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, DASDAE Development Team.
+      
+    </div>
+
+    
+    <a href="https://github.com/DASDAE/dascore" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,7 @@
+dascore.core.schema module
+==========================
+
+.. automodule:: dascore.core.schema
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+dascore.utils.progress module
+=============================
+
+.. automodule:: dascore.utils.progress
+   :members:
+   :undoc-members:
+   :show-inheritance:

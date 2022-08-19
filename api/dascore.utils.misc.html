@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>dascore.utils.misc module &#8212; DASCore 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dascore.utils.patch module" href="dascore.utils.patch.html" />
+    <link rel="prev" title="dascore.utils.mapping module" href="dascore.utils.mapping.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-dascore.utils.misc">
+<span id="dascore-utils-misc-module"></span><h1>dascore.utils.misc module<a class="headerlink" href="#module-dascore.utils.misc" title="Permalink to this heading">¶</a></h1>
+<p>Misc Utilities.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.utils.misc.CacheDescriptor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.utils.misc.</span></span><span class="sig-name descname"><span class="pre">CacheDescriptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/misc.html#CacheDescriptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.misc.CacheDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A descriptor for storing information in an instance-level cache (mapping).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.utils.misc.MethodNameSpace">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.utils.misc.</span></span><span class="sig-name descname"><span class="pre">MethodNameSpace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/misc.html#MethodNameSpace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.misc.MethodNameSpace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A namespace for class methods.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.utils.misc.all_close">
+<span class="sig-prename descclassname"><span class="pre">dascore.utils.misc.</span></span><span class="sig-name descname"><span class="pre">all_close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/misc.html#all_close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.misc.all_close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if ar1 is allcose to ar2.</p>
+<p>Just uses numpy.allclose unless ar1 is a datetime, in which case
+strict equality is used.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.utils.misc.append_func">
+<span class="sig-prename descclassname"><span class="pre">dascore.utils.misc.</span></span><span class="sig-name descname"><span class="pre">append_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">some_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/misc.html#append_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.misc.append_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to append a function to a list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.utils.misc.check_evenly_sampled">
+<span class="sig-prename descclassname"><span class="pre">dascore.utils.misc.</span></span><span class="sig-name descname"><span class="pre">check_evenly_sampled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/misc.html#check_evenly_sampled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.misc.check_evenly_sampled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an array is evenly sampled.</p>
+<p>If not raise a ParameterError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>array</strong> (<em>Union</em><em>[</em><em>_SupportsArray</em><em>[</em><em>dtype</em><em>]</em><em>, </em><em>_NestedSequence</em><em>[</em><em>_SupportsArray</em><em>[</em><em>dtype</em><em>]</em><em>]</em><em>, </em><em>bool</em><em>, </em><em>int</em><em>, </em><em>float</em><em>, </em><em>complex</em><em>, </em><em>str</em><em>, </em><em>bytes</em><em>, </em><em>_NestedSequence</em><em>[</em><em>Union</em><em>[</em><em>bool</em><em>, </em><em>int</em><em>, </em><em>float</em><em>, </em><em>complex</em><em>, </em><em>str</em><em>, </em><em>bytes</em><em>]</em><em>]</em><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.utils.misc.get_dim_value_from_kwargs">
+<span class="sig-prename descclassname"><span class="pre">dascore.utils.misc.</span></span><span class="sig-name descname"><span class="pre">get_dim_value_from_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/misc.html#get_dim_value_from_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.misc.get_dim_value_from_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assert that kwargs contain one value and it is a dimension of patch.</p>
+<p>Several patch functions allow passing values via kwargs which are dimension
+specific. This function allows for some sane validation of such functions.</p>
+<p>Return the name of the dimension, its axis position, and its value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.utils.misc.get_slice">
+<span class="sig-prename descclassname"><span class="pre">dascore.utils.misc.</span></span><span class="sig-name descname"><span class="pre">get_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">typing.Optional[tuple]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/misc.html#get_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.misc.get_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a slice object which meets conditions in cond on array.</p>
+<p>This is useful for determining how a particular dimension should be
+trimmed based on a coordinate (array) and an interval (cond).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> – Any array with sorted values, but the array can have zeros
+at the end up to the sorted segment. Eg [1,2,3, 0, 0] works.</p></li>
+<li><p><strong>cond</strong> – An interval for which the array is to be indexed. End points are
+inclusive.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>slice</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array_slice</span> <span class="o">=</span> <span class="n">get_slice</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">cond</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">slice</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.utils.misc.iter_files">
+<span class="sig-prename descclassname"><span class="pre">dascore.utils.misc.</span></span><span class="sig-name descname"><span class="pre">iter_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/misc.html#iter_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.misc.iter_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use os.scan dir to iter files, optionally only for those with given
+extension (ext) or modified times after mtime</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>paths</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – The path to the base directory to traverse. Can also use a collection
+of paths.</p></li>
+<li><p><strong>ext</strong> (<em>str</em><em> or </em><em>None</em>) – The extensions to map.</p></li>
+<li><p><strong>mtime</strong> (<em>int</em><em> or </em><em>float</em>) – Time stamp indicating the minimum mtime.</p></li>
+<li><p><strong>skip_hidden</strong> (<em>bool</em>) – If True skip files or folders (they begin with a ‘.’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Paths, as strings, meeting requirements.</em></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.utils.misc.iterate">
+<span class="sig-prename descclassname"><span class="pre">dascore.utils.misc.</span></span><span class="sig-name descname"><span class="pre">iterate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/misc.html#iterate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.misc.iterate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterable from any object.</p>
+<p>If a string, do not iterate characters, return str in tuple.</p>
+<p><em>This is how iteration *should</em> work in python.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.utils.misc.register_func">
+<span class="sig-prename descclassname"><span class="pre">dascore.utils.misc.</span></span><span class="sig-name descname"><span class="pre">register_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_or_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/misc.html#register_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.misc.register_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for registering a function name in a list or dict.</p>
+<p>If list_or_dict is a list only append the name of the function. If it is
+as dict append name (as key) and function as the value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_or_dict</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]) – A list or dict to which the wrapped function will be added.</p></li>
+<li><p><strong>key</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The name to use, if different than the name of the function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../index.html">DASCore</a></h1>
+
+
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../markdown/executable/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/executable/working_with_files.html">Working with Files</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/dasdae/dascore">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/support.html">Support</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">dascore</a><ul>
+  <li><a href="dascore.html">dascore package</a><ul>
+  <li><a href="dascore.utils.html">dascore.utils package</a><ul>
+      <li>Previous: <a href="dascore.utils.mapping.html" title="previous chapter">dascore.utils.mapping module</a></li>
+      <li>Next: <a href="dascore.utils.patch.html" title="next chapter">dascore.utils.patch module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, DASDAE Development Team.
+      
+    </div>
+
+    
+    <a href="https://github.com/DASDAE/dascore" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

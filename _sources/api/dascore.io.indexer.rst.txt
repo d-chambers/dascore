@@ -1,0 +1,7 @@
+dascore.io.indexer module
+=========================
+
+.. automodule:: dascore.io.indexer
+   :members:
+   :undoc-members:
+   :show-inheritance:

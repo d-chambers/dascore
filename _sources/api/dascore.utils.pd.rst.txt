@@ -1,0 +1,7 @@
+dascore.utils.pd module
+=======================
+
+.. automodule:: dascore.utils.pd
+   :members:
+   :undoc-members:
+   :show-inheritance:

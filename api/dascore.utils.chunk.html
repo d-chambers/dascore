@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>dascore.utils.chunk module &#8212; DASCore 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dascore.utils.docs module" href="dascore.utils.docs.html" />
+    <link rel="prev" title="dascore.utils package" href="dascore.utils.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-dascore.utils.chunk">
+<span id="dascore-utils-chunk-module"></span><h1>dascore.utils.chunk module<a class="headerlink" href="#module-dascore.utils.chunk" title="Permalink to this heading">¶</a></h1>
+<p>Utilities for chunking dataframes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dascore.utils.chunk.ChunkManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dascore.utils.chunk.</span></span><span class="sig-name descname"><span class="pre">ChunkManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/chunk.html#ChunkManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.chunk.ChunkManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for managing the chunking of data defined in a dataframe.</p>
+<p>The chunk manager handles both splitting and joining of contiguous,
+or near-contiguous, blocks of data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overlap</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">datetime64</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Timestamp</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – The amount of overlap between each segment, starting with the end of
+first row. Negative values can be used for inducing gaps.</p></li>
+<li><p><strong>group_columns</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – A sequence of column names which should be used for sorting groups.</p></li>
+<li><p><strong>keep_partial</strong> – If True, keep segments which are shorter than chunk size (at end of
+contiguous blocks)</p></li>
+<li><p><strong>tolerance</strong> – The upper limit of a gap to tolerate in terms of the sampling
+along the desired dimension. E.G., the default value means entities
+with gaps &lt;= 1.5 * d_{name} will be merged.</p></li>
+<li><p><strong>**kawrgs</strong> – kwargs specify the column along which to chunk. The key specifies the
+column along which to chunk, typically, <cite>time</cite> or <cite>distance</cite>, and the
+value specifies the chunk size. A value of None means to chunk on all
+available data (e.g. merge all data).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This class is used internally by <cite>dc.Spool.chunk</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.utils.chunk.ChunkManager.chunk">
+<span class="sig-name descname"><span class="pre">chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/chunk.html#ChunkManager.chunk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.chunk.ChunkManager.chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chunk a dataframe into new contiguous segments.</p>
+<p>The dataframe must have column names {key}_max, {key}_min, and d_{key}
+where {key} is the key used in the kwargs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – Input dataframe to chunk.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>A tuple of the original dataframe with added column ‘_group’ and an</em></p></li>
+<li><p><em>output dataframe with column ‘_group’. The _group column is used</em></p></li>
+<li><p><em>to link the two dataframes together.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dascore.utils.chunk.ChunkManager.get_instruction_df">
+<span class="sig-name descname"><span class="pre">get_instruction_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunked_df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/chunk.html#ChunkManager.get_instruction_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.chunk.ChunkManager.get_instruction_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dataframe connecting the chunked dataframe to its origin.</p>
+<p>This is used to connect source data to desired data after chunking
+operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_df</strong> – The dataframe before chunking</p></li>
+<li><p><strong>chunked_df</strong> – The chunked dataframe (output of <cite>chunk</cite> method)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dascore.utils.chunk.get_intervals">
+<span class="sig-prename descclassname"><span class="pre">dascore.utils.chunk.</span></span><span class="sig-name descname"><span class="pre">get_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_partials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dascore/utils/chunk.html#get_intervals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dascore.utils.chunk.get_intervals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a range of values with optional overlaps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – The start of the interval.</p></li>
+<li><p><strong>stop</strong> – The end of the interval.</p></li>
+<li><p><strong>length</strong> – The length of the segments.</p></li>
+<li><p><strong>overlap</strong> – The overlap of the start of each interval with the end
+of the previous interval.</p></li>
+<li><p><strong>step</strong> – If not None, subtract step (the sampling interval) from the end
+values so that the intervals do not overlap by one sample.</p></li>
+<li><p><strong>keep_partials</strong> – If True, keep the segments which are smaller than chunksize.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>A 2D array where first column is start and second column is end.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../index.html">DASCore</a></h1>
+
+
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../markdown/executable/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/executable/working_with_files.html">Working with Files</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/dasdae/dascore">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/support.html">Support</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">dascore</a><ul>
+  <li><a href="dascore.html">dascore package</a><ul>
+  <li><a href="dascore.utils.html">dascore.utils package</a><ul>
+      <li>Previous: <a href="dascore.utils.html" title="previous chapter">dascore.utils package</a></li>
+      <li>Next: <a href="dascore.utils.docs.html" title="next chapter">dascore.utils.docs module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, DASDAE Development Team.
+      
+    </div>
+
+    
+    <a href="https://github.com/DASDAE/dascore" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

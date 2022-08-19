@@ -1,0 +1,7 @@
+dascore.clients.filespool module
+================================
+
+.. automodule:: dascore.clients.filespool
+   :members:
+   :undoc-members:
+   :show-inheritance:

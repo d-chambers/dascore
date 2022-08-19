@@ -1,0 +1,25 @@
+dascore.utils package
+=====================
+
+.. automodule:: dascore.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dascore.utils.chunk
+   dascore.utils.docs
+   dascore.utils.downloader
+   dascore.utils.mapping
+   dascore.utils.misc
+   dascore.utils.patch
+   dascore.utils.pd
+   dascore.utils.plotting
+   dascore.utils.plugin
+   dascore.utils.progress
+   dascore.utils.time

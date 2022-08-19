@@ -1,0 +1,15 @@
+dascore.clients package
+=======================
+
+.. automodule:: dascore.clients
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dascore.clients.filespool

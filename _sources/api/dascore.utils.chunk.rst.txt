@@ -1,0 +1,7 @@
+dascore.utils.chunk module
+==========================
+
+.. automodule:: dascore.utils.chunk
+   :members:
+   :undoc-members:
+   :show-inheritance:

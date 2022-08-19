@@ -1,0 +1,17 @@
+dascore.core package
+====================
+
+.. automodule:: dascore.core
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dascore.core.patch
+   dascore.core.schema
+   dascore.core.spool

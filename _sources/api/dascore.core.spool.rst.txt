@@ -1,0 +1,7 @@
+dascore.core.spool module
+=========================
+
+.. automodule:: dascore.core.spool
+   :members:
+   :undoc-members:
+   :show-inheritance:

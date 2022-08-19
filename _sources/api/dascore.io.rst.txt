@@ -1,0 +1,27 @@
+dascore.io package
+==================
+
+.. automodule:: dascore.io
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dascore.io.dasdae
+   dascore.io.pickle
+   dascore.io.terra15
+   dascore.io.wav
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dascore.io.core
+   dascore.io.indexer

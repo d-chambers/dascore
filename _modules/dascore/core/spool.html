@@ -1,0 +1,448 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dascore.core.spool &#8212; DASCore 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for dascore.core.spool</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module for spools, containers of patches.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">singledispatch</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
+
+<span class="kn">import</span> <span class="nn">dascore</span>
+<span class="kn">from</span> <span class="nn">dascore.constants</span> <span class="kn">import</span> <span class="n">PatchType</span><span class="p">,</span> <span class="n">SpoolType</span><span class="p">,</span> <span class="n">numeric_types</span><span class="p">,</span> <span class="n">timeable_types</span>
+<span class="kn">from</span> <span class="nn">dascore.utils.chunk</span> <span class="kn">import</span> <span class="n">ChunkManager</span>
+<span class="kn">from</span> <span class="nn">dascore.utils.docs</span> <span class="kn">import</span> <span class="n">compose_docstring</span>
+<span class="kn">from</span> <span class="nn">dascore.utils.mapping</span> <span class="kn">import</span> <span class="n">FrozenDict</span>
+<span class="kn">from</span> <span class="nn">dascore.utils.misc</span> <span class="kn">import</span> <span class="n">CacheDescriptor</span>
+<span class="kn">from</span> <span class="nn">dascore.utils.patch</span> <span class="kn">import</span> <span class="n">merge_patches</span><span class="p">,</span> <span class="n">patches_to_df</span>
+<span class="kn">from</span> <span class="nn">dascore.utils.pd</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_convert_min_max_in_kwargs</span><span class="p">,</span>
+    <span class="n">adjust_segments</span><span class="p">,</span>
+    <span class="n">filter_df</span><span class="p">,</span>
+    <span class="n">get_column_names_from_dim</span><span class="p">,</span>
+    <span class="n">get_dim_names_from_columns</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="BaseSpool"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.BaseSpool">[docs]</a><span class="k">class</span> <span class="nc">BaseSpool</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spool Abstract Base Class (ABC) for defining Spool interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PatchType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a patch from the spool.&quot;&quot;&quot;</span>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PatchType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Iterate through the Patches in the spool.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseSpool.update"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.BaseSpool.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">SpoolType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the contents of the spool and returns a spool.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="BaseSpool.chunk"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.BaseSpool.chunk">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">SpoolType</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">numeric_types</span><span class="p">,</span> <span class="n">timeable_types</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">snap_coords</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Chunk the data in the spool along specified dimensions.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        overlap</span>
+<span class="sd">            The amount of overlap between each segment, starting with the end of</span>
+<span class="sd">            first patch. Negative values can be used to induce gaps.</span>
+<span class="sd">        keep_partial</span>
+<span class="sd">            If True, keep the segments which are smaller than chunk size.</span>
+<span class="sd">            This often occurs because of data gaps or at end of chunks.</span>
+<span class="sd">        snap_coords</span>
+<span class="sd">            If True, snap the coords on joined patches such that the spacing</span>
+<span class="sd">            remains constant.</span>
+<span class="sd">        tolerance</span>
+<span class="sd">            The number of samples a block of data can be spaced and still be</span>
+<span class="sd">            considered contiguous.</span>
+<span class="sd">        kwargs</span>
+<span class="sd">            kwargs are used to specify the dimension along which to chunk, eg:</span>
+<span class="sd">            `time=10` chunks along the time axis in 10 second increments.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="BaseSpool.select"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.BaseSpool.select">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">SpoolType</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select only part of the data.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="BaseSpool.get_contents"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.BaseSpool.get_contents">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">SpoolType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a dataframe of the patches that will be returned by the spool.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="DataFrameSpool"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.DataFrameSpool">[docs]</a><span class="k">class</span> <span class="nc">DataFrameSpool</span><span class="p">(</span><span class="n">BaseSpool</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A spool whose contents are managed by a dataframe.&quot;&quot;&quot;</span>
+
+    <span class="c1"># A dataframe which represents contents as they will be output</span>
+    <span class="n">_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">CacheDescriptor</span><span class="p">(</span><span class="s2">&quot;_cache&quot;</span><span class="p">,</span> <span class="s2">&quot;_get_df&quot;</span><span class="p">)</span>
+    <span class="c1"># A dataframe which shows patches in the source</span>
+    <span class="n">_source_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">CacheDescriptor</span><span class="p">(</span><span class="s2">&quot;_cache&quot;</span><span class="p">,</span> <span class="s2">&quot;_get_source_df&quot;</span><span class="p">)</span>
+    <span class="c1"># A dataframe of instructions for going from source_df to df</span>
+    <span class="n">_instruction_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">CacheDescriptor</span><span class="p">(</span><span class="s2">&quot;_cache&quot;</span><span class="p">,</span> <span class="s2">&quot;_get_instruction_df&quot;</span><span class="p">)</span>
+    <span class="c1"># kwargs for filtering contents</span>
+    <span class="n">_select_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">]</span> <span class="o">=</span> <span class="n">FrozenDict</span><span class="p">()</span>
+    <span class="c1"># attributes which effect merge groups for internal patches</span>
+    <span class="n">_group_columns</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;network&quot;</span><span class="p">,</span> <span class="s2">&quot;station&quot;</span><span class="p">,</span> <span class="s2">&quot;dims&quot;</span><span class="p">,</span> <span class="s2">&quot;data_type&quot;</span><span class="p">,</span> <span class="s2">&quot;history&quot;</span><span class="p">,</span> <span class="s2">&quot;tag&quot;</span><span class="p">)</span>
+    <span class="n">_drop_columns</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;patch&quot;</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="nf">_get_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Function to get the current df.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_source_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Function to get the current df.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_instruction_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Function to get the current df.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_patches_from_index</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="c1"># a single index was used, should return a single patch</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unbox_patch</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="c1"># a slice was used, return a sub-spool</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unbox_patch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_patches_from_index</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_unbox_patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patch_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Unbox a single patch from a patch list, check len.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">patch_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">patch_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_patches_from_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_ind</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given an index (from current df), return the corresponding patch.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source_df</span>
+        <span class="n">instruction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instruction_df</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df_ind</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>  <span class="c1"># handle slicing</span>
+            <span class="n">df1</span> <span class="o">=</span> <span class="n">instruction</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">instruction</span><span class="p">[</span><span class="s2">&quot;current_index&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">df_ind</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Filter instruction df to only include current index.</span>
+            <span class="n">df1</span> <span class="o">=</span> <span class="n">instruction</span><span class="p">[</span><span class="n">instruction</span><span class="p">[</span><span class="s2">&quot;current_index&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">df_ind</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">df1</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;index of [</span><span class="si">{</span><span class="n">df_ind</span><span class="si">}</span><span class="s2">] is out of bounds for spool.&quot;</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">joined</span> <span class="o">=</span> <span class="n">df1</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">df1</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_patch_from_instruction_df</span><span class="p">(</span><span class="n">joined</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_patch_from_instruction_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">joined</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the patches joined columns of instruction df.&quot;&quot;&quot;</span>
+        <span class="n">df_dict_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_to_dict_list</span><span class="p">(</span><span class="n">joined</span><span class="p">)</span>
+        <span class="n">out_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">expected_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">joined</span><span class="p">[</span><span class="s2">&quot;current_index&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">patch_kwargs</span> <span class="ow">in</span> <span class="n">df_dict_list</span><span class="p">:</span>
+            <span class="c1"># convert kwargs to format understood by parser/patch.select</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="n">_convert_min_max_in_kwargs</span><span class="p">(</span><span class="n">patch_kwargs</span><span class="p">,</span> <span class="n">joined</span><span class="p">)</span>
+            <span class="n">patch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_patch</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">select_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">i</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">patch</span><span class="o">.</span><span class="n">dims</span> <span class="ow">or</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">patch</span><span class="o">.</span><span class="n">coords</span>
+            <span class="p">}</span>
+            <span class="n">out_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patch</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">**</span><span class="n">select_kwargs</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">out_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">expected_len</span><span class="p">:</span>
+            <span class="n">out_list</span> <span class="o">=</span> <span class="n">merge_patches</span><span class="p">(</span><span class="n">out_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out_list</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_dummy_dataframes</span><span class="p">(</span><span class="n">input_df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return dummy current, source, and instruction dataframes.</span>
+
+<span class="sd">        Dummy because the source and current df are the same, so the</span>
+<span class="sd">        instruction df is a straight mapping between the two.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">input_df</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="n">get_dim_names_from_columns</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">cols2keep</span> <span class="o">=</span> <span class="n">get_column_names_from_dim</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span>
+        <span class="n">instruction</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">input_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()[</span><span class="n">cols2keep</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">source_index</span><span class="o">=</span><span class="n">output</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">current_index</span><span class="o">=</span><span class="n">output</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;source_index&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;current_index&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">input_df</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">instruction</span>
+
+    <span class="k">def</span> <span class="nf">_df_to_dict_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the dataframe to a list of dicts for iteration.</span>
+
+<span class="sd">        This is significantly faster than iterating rows.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df_dict_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">df_dict_list</span>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_load_patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Given a row from the managed dataframe, return a patch.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DataFrameSpool.chunk"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.DataFrameSpool.chunk">[docs]</a>    <span class="nd">@compose_docstring</span><span class="p">(</span><span class="n">doc</span><span class="o">=</span><span class="n">BaseSpool</span><span class="o">.</span><span class="n">chunk</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">SpoolType</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">numeric_types</span><span class="p">,</span> <span class="n">timeable_types</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_partial</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        {doc}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_drop_columns</span><span class="p">),</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="n">chunker</span> <span class="o">=</span> <span class="n">ChunkManager</span><span class="p">(</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">keep_partial</span><span class="o">=</span><span class="n">keep_partial</span><span class="p">,</span>
+            <span class="n">group_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_group_columns</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">in_df</span><span class="p">,</span> <span class="n">out_df</span> <span class="o">=</span> <span class="n">chunker</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">instructions</span> <span class="o">=</span> <span class="n">chunker</span><span class="o">.</span><span class="n">get_instruction_df</span><span class="p">(</span><span class="n">in_df</span><span class="p">,</span> <span class="n">out_df</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_from_df</span><span class="p">(</span><span class="n">out_df</span><span class="p">,</span> <span class="n">source_df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="p">,</span> <span class="n">instruction_df</span><span class="o">=</span><span class="n">instructions</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataFrameSpool.new_from_df"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.DataFrameSpool.new_from_df">[docs]</a>    <span class="k">def</span> <span class="nf">new_from_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">source_df</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instruction_df</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new instance from dataframes.&quot;&quot;&quot;</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">df_</span><span class="p">,</span> <span class="n">source_</span><span class="p">,</span> <span class="n">inst_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dummy_dataframes</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="n">df</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_source_df</span> <span class="o">=</span> <span class="n">source_df</span> <span class="k">if</span> <span class="n">source_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">source_</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_instruction_df</span> <span class="o">=</span> <span class="n">instruction_df</span> <span class="k">if</span> <span class="n">instruction_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">inst_</span>
+        <span class="k">return</span> <span class="n">new</span></div>
+
+<div class="viewcode-block" id="DataFrameSpool.select"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.DataFrameSpool.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sub-select certain dimensions for Spool&quot;&quot;&quot;</span>
+        <span class="n">inst</span> <span class="o">=</span> <span class="n">adjust_segments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_instruction_df</span><span class="p">,</span> <span class="n">ignore_bad_kwargs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_from_df</span><span class="p">(</span>
+            <span class="n">adjust_segments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
+            <span class="n">source_df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_df</span><span class="p">,</span>
+            <span class="n">instruction_df</span><span class="o">=</span><span class="n">inst</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="DataFrameSpool.get_contents"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.DataFrameSpool.get_contents">[docs]</a>    <span class="nd">@compose_docstring</span><span class="p">(</span><span class="n">doc</span><span class="o">=</span><span class="n">BaseSpool</span><span class="o">.</span><span class="n">get_contents</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        {doc}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="p">[</span><span class="n">filter_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_select_kwargs</span><span class="p">)]</span></div></div>
+
+
+<div class="viewcode-block" id="MemorySpool"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.MemorySpool">[docs]</a><span class="k">class</span> <span class="nc">MemorySpool</span><span class="p">(</span><span class="n">DataFrameSpool</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Spool for storing patches in memory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># tuple of attributes to remove from table</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">PatchType</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">PatchType</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dfs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dummy_dataframes</span><span class="p">(</span><span class="n">patches_to_df</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source_df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instruction_df</span> <span class="o">=</span> <span class="n">dfs</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a (hopefully) useful string rep of spool.&quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span>
+        <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;time_min&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;time_max&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;MemorySpool object managing </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> patches spanning:&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">tmin</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">tmax</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="fm">__repr__</span> <span class="o">=</span> <span class="fm">__str__</span>
+
+    <span class="k">def</span> <span class="nf">_load_patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the patch into memory&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;patch&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_spool"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.get_spool">[docs]</a><span class="nd">@singledispatch</span>
+<span class="k">def</span> <span class="nf">get_spool</span><span class="p">(</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">BaseSpool</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">PatchType</span><span class="p">]],</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpoolType</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a spool from an object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj</span>
+<span class="sd">        An object from which a spool can be derived.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Could not get spool from: </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="spool_from_str"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.spool_from_str">[docs]</a><span class="nd">@get_spool</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="nd">@get_spool</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Path</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">spool_from_str</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get a spool from a path.&quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>  <span class="c1"># a directory was passed</span>
+        <span class="kn">from</span> <span class="nn">dascore.clients.filespool</span> <span class="kn">import</span> <span class="n">FileSpool</span>
+
+        <span class="k">return</span> <span class="n">FileSpool</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>  <span class="c1"># a single file path was passed.</span>
+        <span class="k">return</span> <span class="n">dascore</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not get spool from </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="spool_from_spool"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.spool_from_spool">[docs]</a><span class="nd">@get_spool</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">BaseSpool</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">spool_from_spool</span><span class="p">(</span><span class="n">spool</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a spool from a spool.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">spool</span></div>
+
+
+<div class="viewcode-block" id="spool_from_patch_list"><a class="viewcode-back" href="../../../api/dascore.core.spool.html#dascore.core.spool.spool_from_patch_list">[docs]</a><span class="nd">@get_spool</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+<span class="nd">@get_spool</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">spool_from_patch_list</span><span class="p">(</span><span class="n">patch_list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a spool from a sequence of patches.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">MemorySpool</span><span class="p">(</span><span class="n">patch_list</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../../index.html">DASCore</a></h1>
+
+
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../markdown/executable/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../markdown/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../markdown/executable/working_with_files.html">Working with Files</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/dasdae/dascore">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../markdown/contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../markdown/support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">API Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, DASDAE Development Team.
+      
+    </div>
+
+    
+    <a href="https://github.com/DASDAE/dascore" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
