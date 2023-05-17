@@ -26,17 +26,44 @@ jobs:
     # only run if CI isn't turned off
     if: github.event_name == 'push' || !contains(github.event.pull_request.labels.*.name, 'no_ci')
 
+    env:
+      # used to manually trigger cache reset. Just increment to do this.
+      CACHE_NUMBER: 0
+      # set path of test environment for caching
+      prefix: ${{ startsWith(matrix.os, 'ubuntu') && '/usr/share/miniconda3/envs/dascore'
+               || startsWith(matrix.os, 'macos') && '/Users/runner/miniconda3/envs/dascore'
+               || startsWith(matrix.os, 'windows') && 'C:\Miniconda3\envs\dascore' }}
+      # set individual cache key (only the start of it)
+      cache_key: ${{ matrix.os }}-py${{ matrix.python-version }}
+      # set conda environment file with dependencies
+
+
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Get year week
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y:%U')"
+
+      - uses: actions/cache@v3
         with:
-          miniconda-version: 'latest'
-          python-version: ${{ matrix.python-version }}
+          path: ${{ env.prefix }}
+          key: ${{ env.cache_key }}-hash${{ hashFiles(env.env_file) }}-${{ steps.date.outputs.date }}-${{ env.CACHE_NUMBER }}
+        id: cache
+
+      - name: setup conda env
+        uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
           activate-environment: dascore
-          environment-file: environment.yml
+          use-mamba: true
           condarc-file: .github/test_condarc.yml
+          python-version: ${{ matrix.python-version }}
+
+      - name: Update environment
+        run: mamba env update -n test -f ${{ env.env_file }}
+        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: install dascore
         shell: bash -l {0}
@@ -60,12 +87,6 @@ jobs:
         shell: bash -l {0}
         run: |
           pytest dascore --doctest-modules
-
-      # Runs the documentation notebooks
-#      - name: test notebook docs
-#        shell: bash -l {0}
-#        run: |
-#          pytest docs --codeblocks
 
       # upload coverage
       - name: upload coverage
