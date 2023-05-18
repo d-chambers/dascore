@@ -9,6 +9,7 @@ on:
     paths:
       - 'pyproject.toml'
       - '**.py'
+      - '.github/workflows/runtests.yml'
 
 # Cancel previous runs when this one starts.
 concurrency:
