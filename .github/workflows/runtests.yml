@@ -79,7 +79,6 @@ jobs:
         with:
           path: ${{ env.DATA_CACHE_PATH }}
           key: DATA_${{ env.CACHE_NUMBER }}
-        id: cache
 
       - name: print package info
         shell: bash -l {0}
