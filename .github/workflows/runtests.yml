@@ -6,9 +6,9 @@ on:
   pull_request:
     branches:
     - master
-  paths:
-    - 'pyproject.toml'
-    - '**.py'
+    paths:
+      - 'pyproject.toml'
+      - '**.py'
 
 # Cancel previous runs when this one starts.
 concurrency:
