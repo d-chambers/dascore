@@ -32,7 +32,7 @@ jobs:
 
     env:
       # used to manually trigger cache reset. Just increment if needed.
-      CACHE_NUMBER: 0
+      CACHE_NUMBER: 1
       # set path of test environment for caching
       prefix: ${{ startsWith(matrix.os, 'ubuntu') && '/usr/share/miniconda3/envs/dascore'
                || startsWith(matrix.os, 'macos') && '/Users/runner/miniconda3/envs/dascore'
