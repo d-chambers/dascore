@@ -6,6 +6,9 @@ on:
   pull_request:
     branches:
     - master
+  paths:
+    - 'pyproject.toml'
+    - '**.py'
 
 # Cancel previous runs when this one starts.
 concurrency:
@@ -16,6 +19,7 @@ jobs:
   # Runs the tests on combinations of the supported python/os matrix.
   test_code:
 
+    timeout-minutes: 20
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -52,7 +56,7 @@ jobs:
         id: cache
 
       - name: setup conda env
-        uses: conda-incubator/setup-miniconda@v2.1.1
+        uses: conda-incubator/setup-miniconda@v2.2.0
         with:
           miniforge-variant: Mambaforge
           miniforge-version: latest
@@ -77,6 +81,7 @@ jobs:
       - name: cache test data
         uses: actions/cache@v3
         with:
+          enableCrossOsArchive: true
           path: ${{ env.DATA_CACHE_PATH }}
           key: DATA_${{ env.CACHE_NUMBER }}
 
