@@ -49,13 +49,6 @@ jobs:
         id: date
         run: echo "date=$(date +'%Y:%U')" >> $GITHUB_STATE
 
-      - name: Cache conda env
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.prefix }}
-          key: ${{ env.cache_key }}-hash${{ hashFiles(env.env_file) }}-${{ steps.date.outputs.date }}-${{ env.CACHE_NUMBER }}
-        id: cache
-
       - name: setup conda env
         uses: conda-incubator/setup-miniconda@v2.2.0
         with:
@@ -64,6 +57,13 @@ jobs:
           activate-environment: dascore
           use-mamba: true
           python-version: ${{ matrix.python-version }}
+
+      - name: Cache conda env
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.prefix }}
+          key: ${{ env.cache_key }}-hash${{ hashFiles(env.env_file) }}-${{ steps.date.outputs.date }}-${{ env.CACHE_NUMBER }}
+        id: cache
 
       - name: Update environment
         run: mamba env update -n test -f ${{ env.env_file }}
