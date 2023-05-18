@@ -42,7 +42,7 @@ jobs:
 
       - name: Get year week
         id: date
-        run: echo "::set-output name=date::$(date +'%Y:%U')"
+        run: echo "date=$(date +'%Y:%U')" >> $GITHUB_STATE
 
       - name: Cache conda env
         uses: actions/cache@v3
@@ -70,7 +70,7 @@ jobs:
           python -m pip install -e .[test]
 
       - name: set data cache path
-        shell: bash - l {0}
+        shell: bash -l {0}
         run: |
           echo "DATA_CACHE_PATH=$(python -c "import pooch; print(pooch.os_cache('dascore'))")" >> $GITHUB_ENV
 
