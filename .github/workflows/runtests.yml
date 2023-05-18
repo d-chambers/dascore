@@ -35,6 +35,7 @@ jobs:
       # set individual cache key (only the start of it)
       cache_key: ${{ matrix.os }}-py${{ matrix.python-version }}
       # set conda environment file with dependencies
+      env_file: "environment.yml"
 
     steps:
       - uses: actions/checkout@v2
