@@ -11,7 +11,7 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write
   pages: write
   deployments: write
   id-token: write
@@ -22,18 +22,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Build job
-  permissions:
-    contents: write
 
   build:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/checkout@v3
