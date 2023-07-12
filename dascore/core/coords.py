@@ -14,11 +14,11 @@ from typing_extensions import Self
 
 import dascore as dc
 from dascore.compat import array
-from dascore.constants import PatchType, dascore_styles
+from dascore.constants import dascore_styles
 from dascore.exceptions import CoordError, ParameterError
 from dascore.units import Quantity, Unit, get_conversion_factor, get_factor_and_unit
 from dascore.utils.display import get_nice_text
-from dascore.utils.misc import all_diffs_close_enough, get_middle_value, iterate
+from dascore.utils.misc import all_diffs_close_enough, iterate
 from dascore.utils.models import ArrayLike, DascoreBaseModel, DTypeLike, UnitQuantity
 from dascore.utils.time import is_datetime64, is_timedelta64
 
@@ -62,45 +62,6 @@ def _get_nullish_for_type(dtype):
     # a bit of a problem for ints, which have no null rep., but upcasting
     # to float will probably cause less damage then using None
     return np.NaN
-
-
-def assign_coords(patch: PatchType, **kwargs) -> PatchType:
-    """
-    Add non-dimensional coordinates to a patch.
-
-    Parameters
-    ----------
-    patch
-        The patch to which coordinates will be added.
-    **kwargs
-        Used to specify the name, dimension, and values of the new
-        coordinates.
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> import dascore as dc
-    >>> patch_1 = dc.get_example_patch()
-    >>> coords = patch_1.coords
-    >>> dist = coords['distance']
-    >>> time = coords['time']
-    >>> # Add a single coordinate associated with distance dimension
-    >>> lat = np.arange(0, len(dist)) * .001 -109.857952
-    >>> out_1 = patch_1.assign_coords(latitude=('distance', lat))
-    >>> # Add multiple coordinates associated with distance dimension
-    >>> lon = np.arange(0, len(dist)) *.001 + 41.544654
-    >>> out_2 = patch_1.assign_coords(
-    ...     latitude=('distance', lat),
-    ...     longitude=('distance', lon),
-    ... )
-    >>> # Add multi-dimensional coordinates
-    >>> quality = np.ones_like(patch_1.data)
-    >>> out_3 = patch_1.assign_coords(
-    ...     quality=(patch_1.dims, quality)
-    ... )
-    """
-    coords = patch.coords.update_coords(**kwargs)
-    return patch.new(coords=coords, dims=patch.dims)
 
 
 class BaseCoord(DascoreBaseModel, abc.ABC):
@@ -900,14 +861,16 @@ def get_coord(
         is_monotonic = np.all(view1 > view2) or np.all(view2 > view1)
         # the array cannot be evenly sampled if it isn't monotonic
         if is_monotonic:
-            unique_diff = np.unique(view2 - view1)
+            diffs = view2 - view1
+            unique_diff = np.unique(diffs)
             # here we are dealing with a length 0 or 1 array.
-            if not len(unique_diff):
+            if len(view2) < 2:
                 return None, None, None, False
             if len(unique_diff) == 1 or all_diffs_close_enough(unique_diff):
                 _min = data[0]
                 _max = data[-1]
-                _step = get_middle_value(unique_diff)
+                # this is a poor man's median that preserves dtype
+                _step = np.sort(diffs)[len(diffs) // 2]
                 return _min, _max + _step, _step, is_monotonic
         return None, None, None, is_monotonic
 

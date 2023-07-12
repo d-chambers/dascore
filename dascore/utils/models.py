@@ -1,6 +1,7 @@
 """
 Utilities for models.
 """
+from collections import ChainMap
 from functools import _lru_cache_wrapper, cached_property, reduce
 from typing import Optional, Sequence
 
@@ -104,8 +105,9 @@ class UnitQuantity(str, SimpleValidator):
 def merge_models(
     model_list: Sequence[BaseModel],
     dim: Optional[str] = None,
-    conflicts: Literal["drop", "raise"] = "raise",
+    conflicts: Literal["drop", "raise", "keep_first"] = "raise",
     drop_attrs: Optional[Sequence[str]] = None,
+    coord=None,
 ):
     """
     Merge base models along a dimension.
@@ -122,9 +124,12 @@ def merge_models(
         indicated by dim. If "drop" simply drop conflicting attributes,
         or attributes not shared by all models. If "raise" raise an
         [AttributeMergeError](`dascore.exceptions.AttributeMergeError`] when
-        issues are encountered.
+        issues are encountered. If "keep_first", just keep the first value
+        for each attribute.
     drop_attrs
         If provided, attributes which should be dropped.
+    coord
+        The coordinate for the new values of dim.
     """
 
     def _check_class(mod_list):
@@ -133,17 +138,7 @@ def merge_models(
             msg = "Models must all be the same class to merge"
             raise AttributeMergeError(msg)
 
-    def _get_model_dict_list(mod_list):
-        """Get list of model_dict, merge along dim if specified."""
-        model_dicts = [dict(x) for x in mod_list]
-        # drop attributes specified.
-        if drop := set(iterate(drop_attrs)):
-            model_dicts = [
-                {i: v for i, v in x.items() if i not in drop} for x in model_dicts
-            ]
-        model_sets = [set(x) for x in model_dicts]
-        if not dim:
-            return model_dicts
+    def _get_start_stop_step_from_values(model_dicts, model_sets):
         dmin, dmax, dstep = f"{dim}_min", f"{dim}_max", f"d_{dim}"
         expected_attrs = {dmin, dmax}
         if not all([x.issuperset(expected_attrs) for x in model_sets]):
@@ -157,10 +152,29 @@ def merge_models(
         # if the steps are "close" we allow them to merge
         if all_diffs_close_enough(steps):
             step = get_middle_value(steps)
+        return min_start, max_end, step
+
+    def _get_model_dict_list(mod_list):
+        """Get list of model_dict, merge along dim if specified."""
+        model_dicts = [dict(x) for x in mod_list]
+        # drop attributes specified.
+        if drop := set(iterate(drop_attrs)):
+            model_dicts = [
+                {i: v for i, v in x.items() if i not in drop} for x in model_dicts
+            ]
+        model_sets = [set(x) for x in model_dicts]
+        if not dim:
+            return model_dicts
+        if coord is None:
+            min_start, max_end, step = _get_start_stop_step_from_values(
+                model_dicts, model_sets
+            )
+        else:
+            min_start, max_end = coord.min(), coord.max()
+            step = coord.step
         for mod in model_dicts:
-            mod[dmin], mod[dmax] = min_start, max_end
-            # we allow
-            mod[dstep] = step or mod[dstep]
+            mod[f"{dim}_min"], mod[f"{dim}_max"] = min_start, max_end
+            mod[f"d_{dim}"] = np.NaN if step is None else step
         return model_dicts
 
     def _replace_null_with_None(mod_dict_list):
@@ -186,6 +200,8 @@ def merge_models(
 
     def _handle_other_attrs(mod_dict_list):
         """Check the other attributes and handle based on conflicts param."""
+        if conflicts == "keep_first":
+            return [dict(ChainMap(*mod_dict_list))]
         no_null_ = _replace_null_with_None(mod_dict_list)
         all_eq = all(no_null_[0] == x for x in no_null_)
         if all_eq:
