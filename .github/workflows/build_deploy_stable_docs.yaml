@@ -23,7 +23,8 @@ concurrency:
 
 jobs:
   # Build job
-  permissions: "read-all|write-all"
+  permissions:
+    contents: write
 
   build:
     runs-on: ubuntu-latest
