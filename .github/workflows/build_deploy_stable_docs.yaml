@@ -76,6 +76,11 @@ jobs:
         with:
           path: 'docs/_site'
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+      - name: Zip artifact for deployment
+        run: zip docs.zip docs/_site -r
+
+      - name: Upload Release Docs
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: docs.zip
