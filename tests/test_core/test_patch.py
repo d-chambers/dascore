@@ -666,6 +666,7 @@ class TestAssertHasCoords:
     def test_has_coords_ok(self, random_patch):
         """No Error should be raised if the patch has the coordinates."""
         dims = random_patch.dims
+        # test
         random_patch.assert_has_coords(dims[0])
         random_patch.assert_has_coords(dims)
 
