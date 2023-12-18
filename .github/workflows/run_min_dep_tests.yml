@@ -12,9 +12,13 @@ on:
       - '**.py'
       - '.github/workflows/runtests.yml'
 
+permissions:
+  actions: 'write'
+
 env:
   # used to manually trigger cache reset. Just increment if needed.
   CACHE_NUMBER: 1
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 # Cancel previous runs when this one starts.
 concurrency:
@@ -73,13 +77,9 @@ jobs:
 
       - name: run test suite
         shell: bash -l {0}
-        run: |
-          export PATH="$pythonLocation:$PATH"
-          python -m pytest -s --cov dascore --cov-append --cov-report=xml
+        run: ./.github/test_code.sh
 
       # Runs examples in docstrings
       - name: test docstrings
         shell: bash -l {0}
-        run: |
-          export PATH="$pythonLocation:$PATH"
-          python -m pytest dascore --doctest-modules
+        run: ./.github/test_code.sh doctest
