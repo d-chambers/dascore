@@ -46,11 +46,25 @@ jobs:
       env_file: "environment.yml"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - name: "get tags"
+        run: |
+          git fetch --tags --force # Retrieve annotated tags.
+
+      # Have to use conda to install hdf5 so mac (I guess m1/2) runners work.
+      - uses: conda-incubator/setup-miniconda@v3
         with:
+          mamba-version: "*"
+          channels: conda-forge,defaults
+          channel-priority: true
           python-version: ${{ matrix.python-version }}
+
+      - name: install hdf5
+        shell: bash -l {0}
+        run: |
+          export PATH="$pythonLocation:$PATH"
+          python -m pip install -e .[test]
 
       - name: install dascore
         shell: bash -l {0}
