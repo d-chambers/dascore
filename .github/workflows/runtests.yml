@@ -79,6 +79,9 @@ jobs:
         run: mamba env update -n test -f ${{ env.env_file }}
         if: steps.cache.outputs.cache-hit != 'true'
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: install dascore
         shell: bash -l {0}
         run: |
