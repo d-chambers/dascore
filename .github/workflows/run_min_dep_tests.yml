@@ -29,7 +29,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+#        os: [ubuntu-latest, macos-latest, windows-latest]
         os: [ubuntu-latest, macos-latest, windows-latest]
+
         python-version: ['3.12']
 
     # only run if CI isn't turned off
@@ -60,10 +62,12 @@ jobs:
           channel-priority: true
           python-version: ${{ matrix.python-version }}
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: install hdf5
         shell: bash -l {0}
         run: |
-          export PATH="$pythonLocation:$PATH"
           python -m pip install -e .[test]
 
       - name: install dascore
