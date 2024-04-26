@@ -49,6 +49,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          depth: 0
 
       - name: "get tags"
         run: |
@@ -62,18 +64,14 @@ jobs:
           channel-priority: true
           python-version: ${{ matrix.python-version }}
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-
       - name: install hdf5
         shell: bash -l {0}
         run: |
-          python -m pip install -e .[test]
+          conda install pytables
 
       - name: install dascore
         shell: bash -l {0}
         run: |
-          export PATH="$pythonLocation:$PATH"
           python -m pip install -e .[test]
 
       - name: set data cache path
