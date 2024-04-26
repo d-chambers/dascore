@@ -61,6 +61,7 @@ jobs:
         with:
           mamba-version: "*"
           channels: conda-forge,defaults
+          environment-file: environment.yml
           channel-priority: true
           miniforge-variant: Mambaforge
           miniforge-version: latest
@@ -78,9 +79,6 @@ jobs:
       - name: Update environment
         run: mamba env update -n test -f ${{ env.env_file }}
         if: steps.cache.outputs.cache-hit != 'true'
-
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
 
       - name: install dascore
         shell: bash -l {0}
