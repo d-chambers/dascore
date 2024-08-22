@@ -79,7 +79,7 @@ jobs:
         id: cache
 
       - name: Update environment
-        run: mamba env update -n test -f ${{ env.env_file }}
+        run: mamba env update -n dascore -f ${{ env.env_file }}
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: install dascore
