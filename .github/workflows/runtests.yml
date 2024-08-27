@@ -29,10 +29,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-#        os: [ubuntu-latest, macos-latest, windows-latest]
-#        python-version: ['3.10', '3.11', "3.12"]
-        os: [ macos-latest ]
-        python-version: [ '3.10' ]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.10', '3.11', "3.12"]
 
     # only run if CI isn't turned off
     if: github.event_name == 'push' || !contains(github.event.pull_request.labels.*.name, 'no_ci')
@@ -82,16 +80,13 @@ jobs:
           enableCrossOsArchive: true
           path: ${{ env.DATA_CACHE_PATH }}
           key: DATA_${{ env.CACHE_NUMBER }}
-#
-#      - name: Setup tmate session
-#        uses: mxschmitt/action-tmate@v3
 
+      # Print out the package info for current environment
       - name: print package info
         shell: bash -el {0}
         run: |
           micromamba info
           micromamba list
-
 
       # Runs test suite and calculates coverage
       - name: run test suite
