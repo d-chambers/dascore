@@ -75,14 +75,14 @@ jobs:
           path: ${{ env.DATA_CACHE_PATH }}
           key: DATA_${{ env.CACHE_NUMBER }}
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-
       - name: print package info
-        shell: bash -el {0}
+        shell: micromamba-shell {0}
         run: |
           conda info -a
           conda list
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       # Runs test suite and calculates coverage
       - name: run test suite
