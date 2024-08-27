@@ -62,7 +62,8 @@ jobs:
       - name: fix env
         shell: bash -l {0}
         run: | 
-          eval $(micromamba shell hook --shell bash)
+          micromamba shell init --shell bash --root-prefix=~/micromamba
+          eval "$(micromamba shell hook --shell bash)"
           micromamba activate dascore
 
       - name: install dascore
@@ -81,9 +82,9 @@ jobs:
           enableCrossOsArchive: true
           path: ${{ env.DATA_CACHE_PATH }}
           key: DATA_${{ env.CACHE_NUMBER }}
-
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+#
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v3
 
       - name: print package info
         shell: bash -el {0}
