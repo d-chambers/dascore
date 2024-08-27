@@ -76,8 +76,8 @@ jobs:
       - name: print package info
         shell: bash -l {0}
         run: |
-          conda info -a
-          conda list
+          mamba info -a
+          mamba list
 
       # Runs test suite and calculates coverage
       - name: run test suite
