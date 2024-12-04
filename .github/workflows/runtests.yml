@@ -68,6 +68,11 @@ jobs:
           eval "$(micromamba shell hook --shell bash)"
           micromamba activate dascore
 
+      - name: print python version
+        shell: bash -el {0}
+        run: |
+          python --version
+
       - name: install dascore
         shell: bash -el {0}
         run: |
