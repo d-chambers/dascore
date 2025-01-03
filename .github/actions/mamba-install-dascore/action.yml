@@ -24,15 +24,8 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Get current date
-      id: date
-      shell: bash -l {0}
-      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-
-    - name: Get current date
-      id: date
-      shell: bash -l {0}
-      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+    - name: Set up environment variable with date
+      run: echo "CURRENT_DATE=$(date '+%Y-%m-%d')" >> $GITHUB_ENV
 
     - uses: mamba-org/setup-micromamba@v2
       with:
@@ -42,7 +35,7 @@ runs:
           bash
           powershell
         cache-environment: true
-        cache-environment-key: environment-${{ steps.date.outputs.date }}-${{ inputs.environment-file }}
+        cache-environment-key: environment-${{ env.CURRENT_DATE }}-${{ inputs.environment-file }}
         post-cleanup: 'all'
         create-args: >-
           python=${{ inputs.python-version }}
