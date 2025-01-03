@@ -13,10 +13,12 @@ inputs:
   install-group-str:
     description: "The string to use for specifying install groups"
     default: "[dev]"
+    required: false
 
   install-package:
     description: "If true, install dascore"
     default: true
+    required: false
 
 runs:
   using: "composite"
