@@ -25,6 +25,7 @@ runs:
   steps:
     - name: Get current date
       id: date
+      shell: bash -l {0}
       run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
     - uses: mamba-org/setup-micromamba@v2
