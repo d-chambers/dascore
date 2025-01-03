@@ -25,6 +25,7 @@ runs:
   using: "composite"
   steps:
     - name: Set up environment variable with date
+      shell: bash -l {0}
       run: echo "CURRENT_DATE=$(date '+%Y-%m-%d')" >> $GITHUB_ENV
 
     - uses: mamba-org/setup-micromamba@v2
