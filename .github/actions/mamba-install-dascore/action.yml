@@ -27,7 +27,12 @@ runs:
     - name: Get current date
       id: date
       shell: bash -l {0}
-      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+    - name: Get current date
+      id: date
+      shell: bash -l {0}
+      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
     - uses: mamba-org/setup-micromamba@v2
       with:
@@ -61,7 +66,7 @@ runs:
         git fetch --tags --force
 
     - name: install dascore
-      if: ${{ inputs.install-package }}
+      if: "${{ inputs.install-package == 'true' }}"
       shell: bash -l {0}
       run: |
         pip install -e .${{ inputs.install-group-str }}
