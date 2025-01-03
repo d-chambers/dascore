@@ -19,6 +19,7 @@ inputs:
     description: "If true, install dascore"
     default: true
     required: false
+    type: boolean
 
 runs:
   using: "composite"
