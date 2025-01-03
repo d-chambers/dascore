@@ -1,0 +1,6 @@
+name: dascore
+channels:
+  - conda-forge
+dependencies:
+  - pytables
+  - h5py
