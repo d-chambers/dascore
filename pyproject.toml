@@ -35,6 +35,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 
 keywords = ["geophysics", "distributed-acoustic-sensing"]
@@ -63,7 +64,7 @@ extras = [
     "findiff",
     "obspy",
     "numba",
-     "segyio",
+    "segyio",
 ]
 
 docs = [
@@ -125,6 +126,7 @@ SEGY__V2_1 = "dascore.io.segy.core:SegyV2_1"
 RSF__V1 = "dascore.io.rsf.core:RSFV1"
 WAV = "dascore.io.wav.core:WavIO"
 XMLBINARY__V1 = "dascore.io.xml_binary.core:XMLBinaryV1"
+GDR_DAS__V1 = "dascore.io.gdr.core:GDR_V1"
 
 
 # --- External tool configuration
