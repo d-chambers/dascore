@@ -41,7 +41,7 @@ runs:
           bash
           powershell
         cache-environment: true
-        cache-environment-key: environment-${{ env.CURRENT_DATE }}-${{ inputs.environment-file }}
+        cache-environment-key: environment-${{ env.CURRENT_DATE }}-${{ inputs.environment-file }}-${{ inputs.python-version }}
         post-cleanup: 'all'
         create-args: >-
           python=${{ inputs.python-version }}
