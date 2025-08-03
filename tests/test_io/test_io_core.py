@@ -7,6 +7,7 @@ import io
 from pathlib import Path
 from typing import TypeVar
 
+import h5py
 import numpy as np
 import pandas as pd
 import pytest
@@ -260,6 +261,14 @@ class TestFormatter:
 class TestGetFormat:
     """Tests to ensure formats can be retrieved."""
 
+    @pytest.fixture(scope="class")
+    def empty_h5_path(self, tmpdir_factory):
+        """Create an empty HDF5 file."""
+        path = tmpdir_factory.mktemp("empty") / "empty.h5"
+        with h5py.File(path, "w"):
+            pass
+        return path
+
     def test_not_known(self, dummy_text_file):
         """Ensure a non-path/str object raises."""
         with pytest.raises(UnknownFiberFormatError):
@@ -278,6 +287,11 @@ class TestGetFormat:
         (name, version) = dc.get_format(path)
         assert fiber_io.name == name
         assert fiber_io.version == version
+
+    def test_empty_hdf5_no_format(self, empty_h5_path):
+        """Ensure the empty hdf5 dorsen't have a format."""
+        with pytest.raises(UnknownFiberFormatError):
+            dc.get_format(empty_h5_path)
 
 
 class TestScan:
@@ -359,6 +373,22 @@ class TestScan:
         with pytest.warns(UserWarning, match=msg):
             scan = dc.scan(terra15_v6_path)
         assert not len(scan)
+
+
+class TestScanToDF:
+    """Tests for scanning to dataframes."""
+
+    def test_input_dataframe(self, random_spool):
+        """Ensure a dataframe returns a dataframe."""
+        df = random_spool.get_contents()
+        out = dc.scan_to_df(df)
+        assert out is df
+
+    def test_spool_dataframe(self, random_directory_spool):
+        """Ensure scan_to_df just gets the dataframe from the spool."""
+        expected = random_directory_spool.get_contents()
+        out = dc.scan_to_df(random_directory_spool)
+        assert out.equals(expected)
 
 
 class TestCastType:
